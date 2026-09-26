@@ -220,8 +220,54 @@ header{padding-block:22px 16px;display:flex;align-items:center;gap:12px;flex-wra
 .btn:active{transform:translateY(4px);box-shadow:0 0 0 var(--ink)}
 .btn:disabled{opacity:.45;cursor:default;transform:none}
 .btn.ghost{background:var(--surface);color:var(--ink)}
+/* 「草稿纸」开着的时候要看得出来是开着的，否则孩子不知道再点一下会关掉 */
+.btn.ghost.on{background:var(--sunken);border-color:var(--g6)}
 .btn.small{padding:9px 18px;min-height:44px;font-size:15px;border-radius:13px}
 .row{display:flex;gap:11px;align-items:center;flex-wrap:wrap}
+
+/* ---------- 草稿纸 ----------
+   ★ 为什么是"并排"而不是"盖住题目的浮层"：孩子算到一半要回头看题目 ——
+     圆、圆柱、扇形统计图这些尤其。浮层一盖住题目，就得反复开合，
+     而开合这个动作会打断思路。代价是题目区变窄，所以只在宽屏（横屏平板）并排，
+     窄屏改成上下排。
+   ★ `.work.draw` 才显示 —— 不用 `hidden` 属性，是为了让"隐藏"和"还没初始化"
+     这两种状态分得开（隐藏时 canvas 量出来是 0×0，见下面 padResize 的注释）。 */
+.work{display:flex;gap:16px;align-items:flex-start}
+.work > .card{flex:1 1 auto;min-width:0}
+.scratch{
+  display:none;flex:0 0 min(46%,540px);
+  flex-direction:column;gap:10px;
+  height:clamp(320px,58vh,560px);
+  background:var(--surface);border:3px solid var(--ink);border-radius:20px;
+  padding:13px;box-shadow:var(--shadow);
+}
+.work.draw .scratch{display:flex}
+.scratch .bar{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.scratch .bar .lb{font-weight:900;font-size:15px;margin-right:auto;color:var(--ink2)}
+#pad{
+  flex:1;width:100%;min-height:200px;display:block;
+  border:2px dashed var(--rule2);border-radius:14px;
+  /* 方格纸底纹：用 CSS 画，不占画布像素，也不会被「清空」擦掉，
+     而且改 dpr / 改尺寸都不用重画一遍。 */
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(to right, var(--rule) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--rule) 1px, transparent 1px);
+  background-size:26px 26px;
+  /* ★★ 这两行不能省。
+     `touch-action:none` —— 少了它，孩子的手指一画，页面就跟着滚：
+     线是断续的，而且画面乱跳。这一条在桌面浏览器上**测不出来**（鼠标不滚页面），
+     只有触摸设备才暴露。
+     `user-select:none` —— 长按会弹出选中/复制菜单，画着画着蹦出来。 */
+  touch-action:none;
+  -webkit-user-select:none;user-select:none;
+  cursor:crosshair;
+}
+@media (max-width:900px){
+  .work{flex-direction:column}
+  .scratch{flex:0 0 auto;width:100%;height:auto}
+  #pad{height:260px;flex:none}
+}
 
 /* ---------- 反馈 ---------- */
 .fb{margin-top:20px;border-top:3px dashed var(--rule);padding-top:18px}
@@ -821,6 +867,161 @@ async function startSession(id, queue = null, where = null){
   }
 }
 
+/* ================= 草稿纸 =================
+   孩子在平板上直接用手指（或触控笔）画。全部在本地，**不发给服务端** ——
+   草稿是思考过程，不是作答内容，没有理由离开这台设备。
+
+   几个不写就会坏的地方：
+   · pointer 事件而不是 touch 事件：鼠标、手指、笔一套代码
+   · touch-action:none（在 CSS 里）：不然一画页面就滚，线是断的
+   · 画布要按 devicePixelRatio 放大：不放大在高分屏上是一团糊的粗线
+   · 只认一个 pointerId：孩子握平板时**手心会压在屏幕上**，
+     不管的话会从手心窜出一条直线
+   · 笔画存下来、尺寸变了重画一遍：不然转屏/改窗口大小，画的东西就没了
+   ========================================= */
+const PAD = { el:null, ctx:null, ro:null, strokes:[], cur:null, pid:null,
+              rect:null, w:0, h:0, dpr:1, on:null };
+
+function padInk(){ return getComputedStyle(document.documentElement)
+  .getPropertyValue('--ink').trim() || '#2B2118'; }
+
+/**
+ * 画一条（或一条的一部分）平滑笔画。
+ *
+ * ★ 只有**这一处**实现。实时画和尺寸变化后重画都走它 —— 两处各写一遍的话，
+ *   会出现"画的时候是弯的、重画之后变直了"这种**看起来对不上但又不会报错**的怪事。
+ *
+ * from 用来只重画尾巴那一小段（实时画的时候不能每来一个点就整条重画，
+ * 一条长笔画会变成 O(n²)）。
+ */
+function padPath(ctx, pts, from){
+  const n = pts.length;
+  const P = (i) => pts[Math.max(0, Math.min(n - 1, i))];
+  const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+  if (n === 1){
+    // 点一下没动 —— 画个圆点，不然"点了没反应"
+    if (from === 0){
+      ctx.beginPath();
+      ctx.arc(pts[0][0], pts[0][1], ctx.lineWidth / 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    return;
+  }
+  const start = Math.max(1, from | 0);
+  ctx.beginPath();
+  // from===1 是整条的起点，从第一个点开始；否则从上一段的中点接上 ——
+  // 接中点才能和之前画的那几段**严丝合缝**（否则每重画一次就多一个断口）
+  const s = start === 1 ? P(0) : mid(P(start - 1), P(start));
+  ctx.moveTo(s[0], s[1]);
+  for (let i = start; i <= n - 2; i++){
+    const c = P(i), m = mid(P(i), P(i + 1));
+    ctx.quadraticCurveTo(c[0], c[1], m[0], m[1]);
+  }
+  ctx.lineTo(P(n - 1)[0], P(n - 1)[1]);
+  ctx.stroke();
+}
+
+function padReplay(){
+  const ctx = PAD.ctx;
+  if (!ctx) return;
+  ctx.setTransform(PAD.dpr, 0, 0, PAD.dpr, 0, 0);
+  ctx.clearRect(0, 0, PAD.w, PAD.h);
+  ctx.strokeStyle = padInk();
+  ctx.fillStyle = padInk();
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  for (const s of PAD.strokes) padPath(ctx, s, 0);
+}
+
+function padResize(){
+  const c = PAD.el;
+  if (!c) return;
+  const r = c.getBoundingClientRect();
+  // ★ 面板隐藏时（display:none）量出来是 0×0。这时候**直接返回、不要设尺寸** ——
+  //   设了就会把画布做成 1×1，而且 `if (尺寸没变就返回)` 之后再也纠正不回来。
+  //   所以 padShow() 里显示出来之后必须再调用一次本函数。
+  if (r.width < 2 || r.height < 2) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 3);
+  const w = Math.round(r.width * dpr), h = Math.round(r.height * dpr);
+  if (c.width === w && c.height === h) return;
+  const oldW = PAD.w, oldH = PAD.h;
+  c.width = w; c.height = h;
+  PAD.w = r.width; PAD.h = r.height; PAD.dpr = dpr;
+  // 尺寸变了就按比例缩放已有的笔画，而不是丢掉 —— 转屏之后画还在
+  if (oldW > 0 && oldH > 0 && (oldW !== PAD.w || oldH !== PAD.h)){
+    const kx = PAD.w / oldW, ky = PAD.h / oldH;
+    for (const s of PAD.strokes) for (const p of s){ p[0] *= kx; p[1] *= ky; }
+  }
+  padReplay();
+}
+
+function padAt(e){
+  const r = PAD.rect || PAD.el.getBoundingClientRect();
+  return [e.clientX - r.left, e.clientY - r.top];
+}
+
+function padDown(e){
+  if (PAD.pid !== null) return;          // 已经有一根手指在画：第二根（手心）不理
+  PAD.pid = e.pointerId;
+  PAD.rect = PAD.el.getBoundingClientRect();   // 一笔之内只量一次
+  try { PAD.el.setPointerCapture(e.pointerId); } catch (_){}
+  PAD.cur = [padAt(e)];
+  PAD.strokes.push(PAD.cur);
+  e.preventDefault();
+}
+
+function padMove(e){
+  if (e.pointerId !== PAD.pid || !PAD.cur) return;
+  const p = padAt(e);
+  const last = PAD.cur[PAD.cur.length - 1];
+  // 手指停在原地时浏览器仍狂发事件，抖动量丢掉，不然点会堆积成噪点
+  if (Math.abs(p[0] - last[0]) + Math.abs(p[1] - last[1]) < 1.5) return;
+  PAD.cur.push(p);
+  const ctx = PAD.ctx;
+  ctx.strokeStyle = padInk();
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  padPath(ctx, PAD.cur, Math.max(1, PAD.cur.length - 3));
+  e.preventDefault();
+}
+
+function padUp(e){
+  if (e.pointerId !== PAD.pid) return;
+  if (PAD.cur && PAD.cur.length === 1) padReplay();   // 只点了一下 -> 补一个圆点
+  PAD.pid = null; PAD.cur = null; PAD.rect = null;
+}
+
+function padInit(canvas){
+  if (PAD.ro) { PAD.ro.disconnect(); PAD.ro = null; }
+  PAD.el = canvas;
+  PAD.ctx = canvas.getContext('2d');
+  PAD.strokes = []; PAD.cur = null; PAD.pid = null; PAD.w = 0; PAD.h = 0;
+  canvas.addEventListener('pointerdown', padDown);
+  canvas.addEventListener('pointermove', padMove);
+  canvas.addEventListener('pointerup', padUp);
+  canvas.addEventListener('pointercancel', padUp);
+  if (window.ResizeObserver){
+    // 面板宽度跟着题目卡变、屏幕转方向、输入法弹起 —— 都会改画布尺寸，
+    // 靠 window.onresize 抓不全
+    PAD.ro = new ResizeObserver(padResize);
+    PAD.ro.observe(canvas);
+  } else {
+    window.addEventListener('resize', padResize);
+  }
+  padResize();
+}
+
+function padShow(work, btn, show){
+  PAD.on = show;
+  work.classList.toggle('draw', show);
+  btn.classList.toggle('on', show);
+  btn.setAttribute('aria-pressed', show ? 'true' : 'false');
+  // ★ 显示出来的这一刻画布才有尺寸，必须重新量一次（见 padResize 的注释）
+  if (show) requestAnimationFrame(padResize);
+}
+
 function renderQuestion(i){
   const q = SESSION.questions[i];
   SESSION.at = i;
@@ -852,20 +1053,43 @@ function renderQuestion(i){
       <span class="u">${esc(q.unit || '')}</span></div>`;
   }
 
-  $('#main').innerHTML = `<div class="card">
-    <div class="qtop">
-      <span class="where" data-kpname>${where}</span>
-      <span class="dots">${dots}</span>
-      ${combo}
+  // 草稿纸默认开不开：宽屏（横屏平板）默认开，窄屏默认关 —— 手机上并排会把
+  // 题目挤成一条。开过一次之后，后面每道题都跟着。
+  const wide = window.matchMedia('(min-width:901px)').matches;
+  if (PAD.on == null) PAD.on = wide;
+
+  $('#main').innerHTML = `<div class="work${PAD.on ? ' draw' : ''}" id="work">
+    <div class="card">
+      <div class="qtop">
+        <span class="where" data-kpname>${where}</span>
+        <span class="dots">${dots}</span>
+        ${combo}
+      </div>
+      <p class="stem">${esc(q.stem)}</p>
+      ${body}
+      <div class="row">
+        <button class="btn" id="submitBtn" disabled>确定</button>
+        <button class="btn ghost small" id="quitBtn">${TONE.skip}</button>
+        <button class="btn ghost small" id="padBtn" aria-pressed="false">✏️ 草稿纸</button>
+      </div>
+      <div id="fb"></div>
     </div>
-    <p class="stem">${esc(q.stem)}</p>
-    ${body}
-    <div class="row">
-      <button class="btn" id="submitBtn" disabled>确定</button>
-      <button class="btn ghost small" id="quitBtn">${TONE.skip}</button>
-    </div>
-    <div id="fb"></div>
+    <aside class="scratch">
+      <div class="bar">
+        <span class="lb">草稿纸</span>
+        <button class="btn ghost small" id="padUndo">撤销</button>
+        <button class="btn ghost small" id="padClear">清空</button>
+      </div>
+      <canvas id="pad" aria-label="草稿纸，可以用手指或触控笔画"></canvas>
+    </aside>
   </div>`;
+
+  // 每道题一张新草稿纸：padInit 会把画过的东西清掉
+  padInit($('#pad'));
+  padShow($('#work'), $('#padBtn'), PAD.on);
+  $('#padBtn').onclick = () => padShow($('#work'), $('#padBtn'), !PAD.on);
+  $('#padUndo').onclick = () => { PAD.strokes.pop(); PAD.cur = null; padReplay(); };
+  $('#padClear').onclick = () => { PAD.strokes = []; PAD.cur = null; padReplay(); };
 
   const btn = $('#submitBtn');
   const box = $('#ansBox');
