@@ -749,6 +749,49 @@ class Handler(http.server.BaseHTTPRequestHandler):
         from urllib.parse import urlparse, parse_qs
         return {k: v[0] for k, v in parse_qs(urlparse(self.path).query).items()}
 
+    # 素材目录里允许发出去的扩展名。**白名单，不是黑名单** ——
+    # 黑名单（"拦掉 .py"）迟早漏一个，白名单漏不掉。
+    ART_TYPES = {'.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml',
+                 '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg'}
+
+    def _art(self, name: str):
+        """发 art/ 目录下的素材（美术画的图）。
+
+        ★ 这是本项目**唯一**按请求路径发文件的地方，所以路径穿越必须挡住：
+          `urlparse` 出来的路径已经去掉了 query，但里面可能带 `..`、`%2e%2e`
+          解码后的形态、或者反斜杠（Windows 上 `..\\` 也是穿越）。
+          做法是**只认裸文件名**：出现任何分隔符或 `..` 就直接 404，
+          连拼路径的机会都不给。再加扩展名白名单。
+        """
+        from urllib.parse import unquote
+        try:
+            name = unquote(name)
+        except Exception:
+            name = ''
+        if (not name or '..' in name or '/' in name or '\\' in name
+                or name.startswith('.')):
+            self._send(404, b'bad asset name', 'text/plain; charset=utf-8')
+            return
+        ctype = self.ART_TYPES.get(Path(name).suffix.lower())
+        if not ctype:
+            self._send(404, ('素材只发图片：%s' % ', '.join(sorted(self.ART_TYPES))).encode('utf-8'),
+                       'text/plain; charset=utf-8')
+            return
+        path = ROOT / 'art' / name
+        if not path.is_file():
+            # 404 是**正常**状态：素材还没画。前端靠 onerror 回落到 emoji，
+            # 所以这里不要报错、不要噪音。
+            self._send(404, ('还没有这个素材：art/%s' % name).encode('utf-8'),
+                       'text/plain; charset=utf-8')
+            return
+        try:
+            body = path.read_bytes()
+        except Exception as err:
+            self._send(500, ('读不到 %s: %s' % (path, err)).encode('utf-8'),
+                       'text/plain; charset=utf-8')
+            return
+        self._send(200, body, ctype)
+
     def _apk(self):
         """把安卓外壳的 APK 发给平板。
 
@@ -805,6 +848,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 self._file('index.html')
             elif path == '/app.apk':
                 self._apk()
+            elif path.startswith('/art/'):
+                # 美术素材。**素材还没画是正常状态** —— 前端 onerror 回落到 emoji，
+                # 所以缺图时这里 404 不报错、也不刷日志。
+                self._art(path[len('/art/'):])
             elif path == '/api/health':
                 # 给自测脚本用的：说清这个服务连的是**哪一份**进度文件。
                 # 不这么做的话，e2e 会把测试数据写进孩子的真实进度，

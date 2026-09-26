@@ -104,10 +104,20 @@ header{padding-block:22px 16px;display:flex;align-items:center;gap:12px;flex-wra
 .tile:hover{transform:translateY(-2px)}
 .tile:active{transform:translateY(4px);box-shadow:0 0 0 var(--ink)}
 .tile .ico{
+  position:relative;                     /* 素材图要绝对定位盖在 emoji 上 */
   font-size:34px;line-height:1;width:58px;height:58px;flex:none;
   display:flex;align-items:center;justify-content:center;
   border:3px solid var(--ink);border-radius:16px;
+  overflow:hidden;
 }
+/* 素材图铺满图标格，按比例缩放到装得下。
+   ★ 用 visibility 而不是 display 隐藏 emoji —— 保住盒子尺寸，
+     图还没加载完的那一瞬间不会跳一下。 */
+.tile .ico img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.tile .ico.has-art .ph{visibility:hidden}
+/* 领主占位大一点：这三个将来是要放**角色立绘**的，58px 会把角色浪费掉。
+   （尺寸见 docs/art-prompts.md —— 领主的立绘是 768×1024。） */
+.tile.lord .ico{width:92px;height:92px;font-size:46px}
 .tile .tx{flex:1;min-width:0}
 .tile .tx b{display:block;font-size:19px;font-weight:900}
 .tile .tx span{display:block;font-size:13.5px;color:var(--ink2);margin-top:2px}
@@ -604,6 +614,25 @@ function smoothClosedPath(pts){
 }
 const SUBJECT_ICON = { math:'➗', chinese:'📖', english:'🔤' };
 
+/* 素材图 + emoji 兜底。
+ *
+ * ★ **素材还没画是正常状态。** 缺图时 <img> 触发 onerror 把自己摘掉，
+ *   底下那个 emoji 就露出来了 —— 所以页面在"有图"和"没图"两种状态下都不坏，
+ *   也不需要任何加载状态/骨架屏。
+ *   这个项目栽过太多次"东西存在但到不了人眼前"，兜底是硬要求不是礼貌。
+ *
+ * 素材到位后只要把文件按命名放进 kmap/art/ 即可，代码一行都不用动
+ * （命名规则见 docs/art-prompts.md 第 9 节）。
+ */
+function artImg(file, emoji, style){
+  return `<span class="ico"${style ? ` style="${style}"` : ''}>
+    <img src="art/${file}" alt="" decoding="async"
+         onload="this.parentNode.classList.add('has-art')"
+         onerror="this.remove()">
+    <span class="ph">${emoji}</span>
+  </span>`;
+}
+
 /* 填空框的提示要**按学科**给。
    写死一个"数字"就是数学的假设 —— 语文题会变成让孩子往一个写着"数字"的框里
    填"潮来时"，手机端还会弹出不对的键盘。 */
@@ -924,12 +953,15 @@ async function renderSubjects(grade){
                 t.color || 'var(--g1)')}</svg>`;
 
   const cards = row.subjects.map(s => {
-    const icon = SUBJECT_ICON[s.key] || '📘';
+    const emoji = SUBJECT_ICON[s.key] || '📘';
+    // 素材按 "lord-{key}.png" 找（见 docs/art-prompts.md 第 9 节）。
+    // 没有就显示 emoji —— 缺图不该让页面变形，也不该出现破图图标。
+    const icon = artImg(`lord-${s.key}.png`, emoji);
     if (!s.ready){
       // 空的格子**照常显示**，但点不动。藏起来的话，界面会随数据增长不断变形；
       // 显示出来，地图才是完整的，也看得出东西在长。
       return `<button class="tile locked" disabled aria-disabled="true">
-        <span class="ico" style="background:var(--sunken)">${icon}</span>
+        ${artImg(`lord-${s.key}.png`, emoji, 'background:var(--sunken)')}
         <span class="tx"><b>${esc(s.name)}领主</b><span>还没有军团</span></span>
         <span class="soon">即将支持</span>
       </button>`;
@@ -939,7 +971,7 @@ async function renderSubjects(grade){
     //   代价是键盘可达性要自己接 —— wireGo() 里已经处理 role="button" 那支。
     return `<div class="tile lord" role="button" tabindex="0" data-go="#/${grade}/${s.key}"
       aria-label="${esc(s.name)}领主，军团 ${s.count} 员将领，已消灭 ${s.destroyed}">
-      <span class="ico" style="background:${t.color}22">${icon}</span>
+      ${artImg(`lord-${s.key}.png`, emoji, `background:${t.color}22`)}
       <span class="tx">
         <b>${esc(s.name)}领主${infoBtn('legion')}</b>
         <span>军团 ${s.count} 员将领 · <b class="hit">已消灭 ${s.destroyed}</b>
