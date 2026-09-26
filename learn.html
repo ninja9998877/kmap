@@ -118,6 +118,48 @@ header{padding-block:22px 16px;display:flex;align-items:center;gap:12px;flex-wra
 /* 领主占位大一点：这三个将来是要放**角色立绘**的，58px 会把角色浪费掉。
    （尺寸见 docs/art-prompts.md —— 领主的立绘是 768×1024。） */
 .tile.lord .ico{width:92px;height:92px;font-size:46px}
+
+/* ---------- 军团徽记 ----------
+   外框（圆形底衬）由代码画，素材只管中间的图案。
+   所以三个军团看起来是一套的，但图案的形状各不相同 —— 缩到 34px 也分得清。 */
+.crest{
+  position:relative;flex:none;
+  width:38px;height:38px;border-radius:50%;
+  border:3px solid var(--ink);
+  background:color-mix(in srgb, var(--cc) 26%, transparent);
+  display:inline-flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.crest img{position:absolute;width:76%;height:76%;object-fit:contain}
+.crest .ph{font-size:18px;font-weight:900;color:var(--ink2);line-height:1}
+.crest.has-art .ph{visibility:hidden}
+.crest.big{width:56px;height:56px}
+.crest.big .ph{font-size:26px}
+
+/* 页头：徽记 + "XX 军团" + 规模 */
+.legionbar{
+  display:flex;align-items:center;gap:13px;
+  background:var(--surface);border:3px solid var(--ink);border-radius:20px;
+  padding:13px 18px;box-shadow:var(--shadow);margin-bottom:16px;
+}
+.legionbar .lb{min-width:0}
+.legionbar .lb b{display:block;font-size:19px;font-weight:900}
+.legionbar .lb span{display:block;font-size:13.5px;color:var(--ink2);margin-top:2px}
+
+/* ---------- 整页水印 ----------
+   ★ z-index:-1 是必须的：position:fixed 配上 z-index:0 会**盖在正文上面**
+     （定位元素画在普通流内容之后）。而我们要它在内容**下面**、背景上面。
+   ★ ::before 只在 .ready 时才有 —— 素材没画时蒙版是空的，
+     直接写 mask 会渲染成一块 6% 的深色方块糊一整屏。 */
+.legion-mark{position:fixed;inset:0;display:grid;place-items:center;
+  pointer-events:none;z-index:-1}
+.legion-mark.ready::before{
+  content:'';display:block;
+  width:min(68vmin,500px);aspect-ratio:1;
+  background:var(--ink);opacity:.055;
+  -webkit-mask:var(--mark) center/contain no-repeat;
+          mask:var(--mark) center/contain no-repeat;
+}
 .tile .tx{flex:1;min-width:0}
 .tile .tx b{display:block;font-size:19px;font-weight:900}
 .tile .tx span{display:block;font-size:13.5px;color:var(--ink2);margin-top:2px}
@@ -633,6 +675,47 @@ function artImg(file, emoji, style){
   </span>`;
 }
 
+/* 军团徽记。外框（圆形底衬）**由代码画**，素材只管中间那个图案 ——
+   这样三个军团的外框是同一套（像同一个游戏里的），
+   而中间的图案形状不同，缩到 34px 也分得清。
+   （外框也画进素材里的话，三个外框一缩小就只剩下颜色能区分了。） */
+function crestImg(key, color, emoji){
+  return `<span class="crest" style="--cc:${color}">
+    <img src="art/crest-${key}.png" alt="" decoding="async"
+         onload="this.parentNode.classList.add('has-art')"
+         onerror="this.remove()">
+    <span class="ph">${emoji}</span>
+  </span>`;
+}
+
+/* 整页水印：把徽记当**蒙版**用，颜色交给 --ink。
+ *
+ * ★★ 为什么不直接把 <img> 调成 6% 透明度：
+ *    徽记是**深色剪影**。深色模式下背景是近黑 #1A1614，
+ *    "深色 + 6% 透明" 叠上去等于**什么都看不见** —— 而且这种错不会报错，
+ *    只会"深色模式下没水印"，没人会注意到。
+ *    当蒙版用、颜色取 var(--ink)，它就会跟着主题自动翻成浅色。
+ *
+ * ★ 也不在 CSS 里直接写 mask:url(art/crest-x.png)：
+ *   素材**还没画**时蒙版是空的，那个元素会渲染成**一块 6% 的深色方块糊一整屏**。
+ *   所以先探一下图在不在（new Image()），在了才开。 */
+function legionMark(key){
+  return `<div class="legion-mark" aria-hidden="true" data-crest="${esc(key)}"></div>`;
+}
+
+function wireLegionMark(){
+  const box = document.querySelector('.legion-mark');
+  if (!box) return;
+  const url = `art/crest-${box.dataset.crest}.png`;
+  const probe = new Image();
+  probe.onload = () => {
+    box.style.setProperty('--mark', `url("${url}")`);
+    box.classList.add('ready');
+  };
+  probe.onerror = () => {};    // 没素材就什么都不做 —— 页面照常，不留痕迹
+  probe.src = url;
+}
+
 /* 填空框的提示要**按学科**给。
    写死一个"数字"就是数学的假设 —— 语文题会变成让孩子往一个写着"数字"的框里
    填"潮来时"，手机端还会弹出不对的键盘。 */
@@ -1049,9 +1132,29 @@ async function renderMap(grade, subject){
     要一直记到忘不掉才算${'消灭'}${infoBtn('kill')}；
     打下来又忘了的会显示${'有异动'}${infoBtn('unstable')}，去守一下就能收回来。</span></p>`;
 
+  // 页头：徽记 + 「XX 军团」+ 规模。
+  // ★ 规模/已消灭读的是 **CATALOG 里那份后端统计**，前端不自己数一遍 ——
+  //   两处各数一次就会出现"页头说 3 个、返回上级说 2 个"。
+  //   拿不到目录时（离线/接口挂了）就只显示这一页自己的将领数，不编数字。
+  let agg = null;
+  try {
+    await loadCatalog();
+    agg = catalogSubject(grade, subject);
+  } catch (_) { /* 目录拿不到不影响看军团 */ }
+  const banner = `<div class="legionbar">
+    ${crestImg(subject, t.color || 'var(--g1)', SUBJECT_ICON[subject] || '📘')}
+    <div class="lb">
+      <b>${esc(GRAPH.subject_name || subject)}军团</b>
+      <span>${grade} 年级 · ${agg ? agg.count : GRAPH.nodes.length} 员将领${
+        agg ? ` · <b class="hit">已消灭 ${agg.destroyed}</b>${
+          agg.unstable ? `<b class="warn"> · ${agg.unstable} 处异动</b>` : ''
+        }` : ''}</span>
+    </div>
+  </div>`;
+
   // 包一层 .units：宽屏时单元块并排（见那段 CSS 的注释）
   $('#main').innerHTML = html
-    ? `${legend}<div class="units">${html}</div>`
+    ? `${legionMark(subject)}${banner}${legend}<div class="units">${html}</div>`
     : '<p>这张图还是空的。</p>';
   document.querySelectorAll('[data-kp]').forEach(b => {
     b.onclick = (e) => {
@@ -1063,7 +1166,16 @@ async function renderMap(grade, subject){
       if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); startSession(b.dataset.kp); }
     };
   });
+  wireLegionMark();     // 水印要先探到图才开，所以得在插进 DOM 之后接
   window.scrollTo({ top:0, behavior:'instant' });
+}
+
+/** 从 CATALOG 里取某一科的统计。取不到返回 null（调用方自己决定退化成什么）。 */
+function catalogSubject(grade, subject){
+  if (!CATALOG || !CATALOG.grades) return null;
+  const row = CATALOG.grades.find(r => r.grade === Number(grade));
+  if (!row) return null;
+  return row.subjects.find(s => s.key === subject) || null;
 }
 
 /* 单元顺序：按 yaml 里 units 段的顺序排；对不上的排最后 */
