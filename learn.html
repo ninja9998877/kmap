@@ -17,7 +17,7 @@
 <style>
 :root{
   --paper:#FDF7EC; --surface:#FFFFFF; --sunken:#F2EADA;
-  --ink:#2B2118; --ink2:#5C5044; --ink3:#8C7F70;
+  --ink:#2B2118; --ink2:#5C5044; --ink3:#766A5D;   /* 压深过：原 #8C7F70 在纸色上只有 3.7:1 */
   --rule:#E0D3BE; --rule2:#C9B99F;
   --g1:#5FB84A; --g2:#3FA9D6; --g3:#E8A33D;
   --g4:#3FA37F; --g5:#8B77D4; --g6:#E2604A;
@@ -25,6 +25,8 @@
   --bad:#D9542F; --badbg:#FCE4DA;
   --warn:#B07C1E; --warnbg:#FCF0D2;
   --star:#F5B731;
+  --pickbg:#FFF4E8;      /* 选中选项的底色 */
+  --btnbg:#E2604A;       /* 主按钮文字（白）的底色 */
   --shadow:0 4px 0 var(--ink);
   --f-body:-apple-system,"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
   --f-mono:ui-monospace,Consolas,Menlo,monospace;
@@ -32,7 +34,7 @@
 @media (prefers-color-scheme:dark){
   :root{
     --paper:#1A1614; --surface:#26211D; --sunken:#332C26;
-    --ink:#F0E7DA; --ink2:#C4B7A6; --ink3:#948877;
+    --ink:#F0E7DA; --ink2:#C4B7A6; --ink3:#A89A89;   /* 提亮过：原 #948877 落在深色卡片上只有 4.0:1 */
     --rule:#453C33; --rule2:#5A4E43;
     --g1:#7CD166; --g2:#63C4E8; --g3:#F0BB5E;
     --g4:#5FC49B; --g5:#A996EE; --g6:#F4816B;
@@ -40,6 +42,12 @@
     --bad:#F08A66; --badbg:#3D2118;
     --warn:#E7C070; --warnbg:#3A2E12;
     --star:#F5C748;
+    /* ★ 这两个必须跟着主题翻。
+       原来 #FFF4E8 是**写死**在 .opt.pick 上的，而文字颜色跟随主题 ——
+       深色模式下 = 浅字压浅底，**1.1:1，等于看不见**。
+       而且浅色模式下完全看不出来（14.5:1 好得很），只有 iPad 开深色才暴露。 */
+    --pickbg:#4A2E22;
+    --btnbg:#C2483A;
     --shadow:0 4px 0 rgba(0,0,0,.55);
   }
 }
@@ -166,7 +174,9 @@ header{padding-block:22px 16px;display:flex;align-items:center;gap:12px;flex-wra
 .tile.locked{opacity:.62;background:var(--sunken);box-shadow:0 4px 0 var(--rule2)}
 .tile.locked:active{transform:none;box-shadow:0 4px 0 var(--rule2)}
 .tile .soon{
-  font-size:12px;font-weight:800;color:var(--ink3);
+  /* "即将支持"是有意义的信息，用 ink2（不是更淡的 ink3）—— ink3 压在
+     灰色底（.tile.locked 的 sunken）上只有 4.4:1，差一点 */
+  font-size:12px;font-weight:800;color:var(--ink2);
   border:2px dashed var(--rule2);border-radius:999px;padding:3px 10px;white-space:nowrap;
 }
 /* 领主卡：里面多了一条堆叠战况条，所以文字那一列要能撑开 */
@@ -232,15 +242,18 @@ header{padding-block:22px 16px;display:flex;align-items:center;gap:12px;flex-wra
 .st{
   display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:800;
   border:2px solid var(--ink);border-radius:999px;padding:1px 8px;white-space:nowrap;
+  /* ★ 文字固定用墨色，**不跟着状态变色**：12px 上彩色字读不清
+     （--g2 在白底上只有 2.7:1）。状态由底纹 + emoji + 文字三样表达。 */
+  color:var(--ink);
 }
-.st-new{background:var(--sunken);color:var(--ink2)}
-.st-eng{background:var(--warnbg);color:var(--warn)}
-.st-sup{background:var(--surface);color:var(--g2)}
-.st-dead{background:var(--okbg);color:var(--ok)}
+.st-new{background:var(--sunken)}
+.st-eng{background:var(--warnbg)}
+.st-sup{background:var(--surface)}
+.st-dead{background:var(--okbg)}
 /* 有异动：**不是**灰色 —— 灰色等于"没打过"，那就把战果抹了。
    用警示色 + 提示语，既保留"打下来过"，又明说"现在松了"。 */
-.st-un{background:var(--badbg);color:var(--bad)}
-.st-note{font-size:12.5px;font-weight:800;color:var(--bad)}
+.st-un{background:var(--badbg)}
+.st-note{font-size:12.5px;font-weight:800;color:var(--ink)}
 /* 有异动的将领卡：描边也换成警示色，在一列卡里一眼能挑出来 */
 .kp.st-un{border-color:var(--bad)}
 .kp.st-dead{border-color:var(--ok)}
@@ -253,7 +266,7 @@ header{padding-block:22px 16px;display:flex;align-items:center;gap:12px;flex-wra
   font-size:15px;font-weight:700;
 }
 .warleft{flex:1 1 100%;font-size:13.5px;font-weight:700;color:var(--ink2);margin-top:2px}
-.warleft b{color:var(--g6)}
+.warleft b{color:var(--ink)}
 
 /* 堆叠战况条：已消灭 / 有异动 / 压制中 / 遭遇中 / 未遭遇
    ★ 不画成单一百分比条。单一百分比会出现"条满了但只消灭 3 个"这种
@@ -333,7 +346,8 @@ header{padding-block:22px 16px;display:flex;align-items:center;gap:12px;flex-wra
   border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;
   font-family:var(--f-mono);font-weight:800;font-size:14px;
 }
-.opt.pick{border-color:var(--g6);background:#FFF4E8}
+/* 底色走变量 —— 写死的话深色模式下会变成浅字压浅底，看不见 */
+.opt.pick{border-color:var(--g6);background:var(--pickbg)}
 .opt.tick{background:var(--okbg);border-color:var(--ok)}
 .opt.cross{background:var(--badbg);border-color:var(--bad)}
 .opt:disabled{cursor:default}
@@ -348,7 +362,7 @@ header{padding-block:22px 16px;display:flex;align-items:center;gap:12px;flex-wra
 
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  background:var(--g6);color:#fff;border:3px solid var(--ink);border-radius:16px;
+  background:var(--btnbg);color:#fff;border:3px solid var(--ink);border-radius:16px;
   padding:14px 30px;min-height:56px;font-weight:900;font-size:17px;
   box-shadow:var(--shadow);
 }
