@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>美术素材预览 · kmap</title>
+<!--
+  为什么要有这个页面：**做这件事的模型看不了图片**，所以素材的技术验收
+  （tools/imgcheck.py：真透明、无文字、内容不贴边）由机器做，
+  而"好不好看、风格对不对"只能人眼看 —— 这个页面就是给那一步用的。
+
+  它把每张素材同时放在**浅色和深色两种底**上、**三种尺寸**下 ——
+  因为这两个正是最容易出问题的地方：
+    · App 支持深色模式，浅色底上好看的图在近黑底上可能是糊的
+    · 素材大多时候是很小的（地图上的城堡只有 ~58px），
+      大图上好看不代表缩小了还认得出
+  棋盘格是用来暴露"假透明"的：背景其实是白色的话，这里一眼就看得出来。
+-->
+<style>
+:root{ --f:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; }
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--f);background:#FDF7EC;color:#2B2118;padding:20px}
+h1{font-size:20px;margin:0 0 6px}
+.hint{font-size:13.5px;color:#5C5044;line-height:1.7;margin:0 0 18px}
+.hint code{background:#F2EADA;padding:1px 6px;border-radius:6px;font-size:12.5px}
+.row{background:#fff;border:3px solid #2B2118;border-radius:18px;padding:14px;
+  margin-bottom:14px;box-shadow:0 4px 0 #2B2118}
+.row h2{font-size:15px;margin:0 0 4px;font-family:ui-monospace,Consolas,monospace}
+.row .meta{font-size:12.5px;color:#8C7F70;margin-bottom:10px}
+.panels{display:flex;gap:12px;flex-wrap:wrap}
+.panel{flex:1 1 260px;border-radius:12px;padding:12px;border:2px solid #2B2118}
+.panel.light{background:#FDF7EC}
+.panel.dark{background:#1A1614;border-color:#453C33}
+.panel .tag{font-size:11.5px;font-weight:800;margin-bottom:8px;opacity:.7}
+.panel.light .tag{color:#5C5044}
+.panel.dark .tag{color:#C4B7A6}
+.sizes{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.sizes figure{margin:0;text-align:center}
+.sizes img{display:block;margin:0 auto}
+/* 棋盘格：暴露"假透明"。背景其实是白底的话，这里看不到格子。 */
+.checker{
+  background-image:
+    linear-gradient(45deg,#D8D0C0 25%,transparent 25%,transparent 75%,#D8D0C0 75%),
+    linear-gradient(45deg,#D8D0C0 25%,transparent 25%,transparent 75%,#D8D0C0 75%);
+  background-size:16px 16px;background-position:0 0,8px 8px;
+  border-radius:8px;padding:6px;display:inline-block;
+}
+.sizes figcaption{font-size:11px;color:#8C7F70;margin-top:5px}
+.missing{color:#D9542F;font-size:13px;font-weight:700}
+.note{font-size:12.5px;color:#5C5044;margin-top:9px;line-height:1.6}
+</style>
+</head>
+<body>
+<h1>美术素材预览</h1>
+<p class="hint">
+  每张素材同时放在<b>浅色底</b>和<b>深色底</b>上、三种尺寸下 ——
+  这两个才是最容易出问题的地方（App 支持深色模式；素材大多时候很小）。
+  图后面的<b>棋盘格</b>是用来暴露“假透明”的：背景其实是白底的话，这里一眼就看出来。
+  <br>技术验收（真透明 / 无文字 / 不贴边）用 <code>python tools/imgcheck.py art/xxx.png</code> 跑。
+</p>
+<div id="out"></div>
+
+<script>
+// 候选素材清单。名字对应 docs/art-prompts.md 第 10 节的命名规则。
+// 不存在的会显示成"还没画"，不会变成破图。
+const ASSETS = [
+  { file:'castle.png',            label:'城堡（首页六座 + 年级页顶部）' },
+  { file:'terrain-1-grass.png',   label:'1 年级 · 草地' },
+  { file:'terrain-2-island.png',  label:'2 年级 · 海岛' },
+  { file:'terrain-3-desert.png',  label:'3 年级 · 沙漠' },
+  { file:'terrain-4-forest.png',  label:'4 年级 · 森林' },
+  { file:'terrain-5-mountain.png',label:'5 年级 · 高山' },
+  { file:'terrain-6-starry.png',  label:'6 年级 · 星野' },
+  { file:'lord-chinese.png',      label:'语文领主' },
+  { file:'lord-math.png',         label:'数学领主' },
+  { file:'lord-english.png',      label:'英语领主' },
+  { file:'crest-chinese.png',     label:'语文军团徽记' },
+  { file:'crest-math.png',        label:'数学军团徽记' },
+  { file:'crest-english.png',     label:'英语军团徽记' },
+  { file:'icon-general.png',      label:'将领图标' },
+  { file:'icon-enemy.png',        label:'敌军图标' },
+];
+// 三种尺寸都看：地图上的城堡约 58px、卡片上的领主约 92px、水印约 400px
+const SIZES = [48, 92, 224];
+
+const out = document.getElementById('out');
+for (const a of ASSETS){
+  const row = document.createElement('div');
+  row.className = 'row';
+  row.innerHTML = `<h2>art/${a.file}</h2><div class="meta">${a.label}</div>`;
+  const panels = document.createElement('div');
+  panels.className = 'panels';
+  for (const theme of ['light', 'dark']){
+    const p = document.createElement('div');
+    p.className = 'panel ' + theme;
+    p.innerHTML = `<div class="tag">${theme === 'light' ? '浅色底 #FDF7EC' : '深色底 #1A1614'}</div>`;
+    const s = document.createElement('div');
+    s.className = 'sizes';
+    for (const px of SIZES){
+      const fig = document.createElement('figure');
+      const box = document.createElement('div');
+      box.className = 'checker';
+      const img = new Image();
+      img.alt = a.label;
+      img.style.width = px + 'px';
+      img.style.height = 'auto';
+      // ★ 素材还没画是**正常状态** —— 缺图时给一句人话，不是破图图标
+      img.onerror = () => {
+        box.outerHTML = '<div class="missing">还没画</div>';
+      };
+      img.src = 'art/' + a.file;
+      box.appendChild(img);
+      fig.appendChild(box);
+      const cap = document.createElement('figcaption');
+      cap.textContent = px + 'px';
+      fig.appendChild(cap);
+      s.appendChild(fig);
+    }
+    p.appendChild(s);
+    panels.appendChild(p);
+  }
+  row.appendChild(panels);
+  out.appendChild(row);
+}
+</script>
+</body>
+</html>

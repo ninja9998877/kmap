@@ -846,6 +846,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 self._file('learn.html')
             elif path == '/plan':
                 self._file('index.html')
+            elif path == '/art-preview':
+                # 给**人眼**看素材用的（技术验收由 tools/imgcheck.py 做）。
+                # 模型看不了图片，所以好不好看这一步必须交给人。
+                self._file('art-preview.html')
             elif path == '/app.apk':
                 self._apk()
             elif path.startswith('/art/'):
