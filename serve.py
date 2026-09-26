@@ -220,27 +220,58 @@ def load_graph(grade: int = 6, subject: str = 'math') -> dict:
 
 
 def api_catalog() -> dict:
-    """三级结构：年级 → 学科 → 有没有内容。
+    """三级结构：年级 → 学科 → 有没有内容，**外加每个学科的战况**。
 
     这一层存在的理由：1-6 年级 × 3 学科 = 18 个格子，现在只有一格有内容。
     与其把空位藏起来，不如**显示出来**（点进去说"即将支持"）—— 这样地图是完整的，
     看得到全貌，也看得到东西在长。藏起来的话，界面会随数据增长而不断变形。
+
+    ★ 战况统计是**顺手**算的，不是新接口：这个函数本来就要把每张图谱读一遍
+      （为了数 count），快照也只取一次。所以首页（六座城堡）和年级页
+      （三个领主）共用这一次请求，不用再打 18 次 /api/graph。
+
+    ★ 五个计数**必须加起来等于 count**。对不上的话说明有节点的状态漏了 ——
+      这是自洽性检查，测试里会断言。
     """
+    snap = PROGRESS.snapshot()
     grades = []
     for g in GRADES:
         subs = []
         for s in SUBJECTS:
-            path = graph_path(g, s['key'])
-            count = 0
-            if path.exists():
-                try:
-                    count = len(load_graph(g, s['key'])['nodes'])
-                except Exception:                 # noqa: BLE001 —— 坏文件不该让整个目录打不开
-                    count = 0
-            subs.append({'key': s['key'], 'name': s['name'],
-                         'ready': path.exists() and count > 0, 'count': count})
+            subs.append(_subject_battle(g, s, snap))
         grades.append({'grade': g, 'subjects': subs})
     return {'grades': grades, 'subjects': SUBJECTS}
+
+
+def _subject_battle(grade: int, subject: dict, snap: dict = None) -> dict:
+    """一个学科的"军团战况"：规模 + 五个状态的计数。
+
+    ★ 抽出来是因为**两处要用同一份**：目录（六个城堡 / 三个领主）和
+      交卷后的战报（"这个军团还剩几员将领"）。两处各数一遍的话，
+      数字不一致时不会报错，只会出现"领主说剩 4 个、战报说剩 5 个"。
+    """
+    subject = subject if isinstance(subject, dict) else {'key': subject, 'name': subject}
+    snap = snap if snap is not None else PROGRESS.snapshot()
+    path = graph_path(grade, subject['key'])
+    nodes = []
+    if path.exists():
+        try:
+            nodes = load_graph(grade, subject['key'])['nodes']
+        except Exception:                         # noqa: BLE001 —— 坏文件不该让整个目录打不开
+            nodes = []
+    # 逐节点取状态，再按状态计数。状态来自 mastery.state()（唯一实现）。
+    tally = {st: 0 for st in mastery.STATES}
+    for n in nodes:
+        card_state = (snap.get(n['id']) or {}).get('state') or mastery.ST_UNTOUCHED
+        tally[card_state] = tally.get(card_state, 0) + 1
+    return {'key': subject['key'], 'name': subject['name'],
+            'ready': path.exists() and bool(nodes),
+            'count': len(nodes),
+            'destroyed': tally[mastery.ST_DESTROYED],
+            'suppressing': tally[mastery.ST_SUPPRESSING],
+            'engaged': tally[mastery.ST_ENGAGED],
+            'untouched': tally[mastery.ST_UNTOUCHED],
+            'unstable': tally[mastery.ST_UNSTABLE]}
 
 
 # ---------------------------------------------------------------- 进度存储
@@ -285,7 +316,12 @@ class Progress:
                        'due': card.get('due'), 'seen': card.get('seen', 0),
                        'interval': card.get('interval', 0),
                        'due_now': mastery.is_due(card, today),
-                       'describe': mastery.describe(card, today)}
+                       'describe': mastery.describe(card, today),
+                       # 战况五档（未遭遇/遭遇中/压制中/已消灭/有异动）。
+                       # ★ 分档逻辑**只在 mastery.state() 一处** —— 前端卡片和
+                       #   下面的战况统计都读这个值。前端再算一遍的话，
+                       #   两处不一致时不会报错，只会出现"总数对不上"。
+                       'state': mastery.state(card)}
         return out
 
     def card(self, kp: str) -> dict:
@@ -653,6 +689,13 @@ def api_finish(body: dict) -> dict:
             'card': card,
             'strength': round(mastery.strength(card), 3),
             'describe': mastery.describe(card, today),
+            # 这位将领现在的战况（未遭遇/遭遇中/压制中/已消灭/有异动）。
+            # 结算页的战报行直接用它 —— 前端不自己拿 strength 再判一遍。
+            'state': mastery.state(card),
+            # 打完这一节之后，这个军团还剩几员将领没拿下。**有限**的数，
+            # 所以能给人"快打完了"的感觉 —— 这是这套叙事真正起作用的地方。
+            'legion': _subject_battle(item.get('grade', 6),
+                                      item.get('subject', 'math')),
             # —— 下面是"效率感"那一套：全是真实的，不编 ——
             # 这一节花了多久 / 上次花了多久（同一个人、同一个知识点）
             'this_secs': round(this_secs),

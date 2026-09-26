@@ -117,6 +117,22 @@ header{padding-block:22px 16px;display:flex;align-items:center;gap:12px;flex-wra
   font-size:12px;font-weight:800;color:var(--ink3);
   border:2px dashed var(--rule2);border-radius:999px;padding:3px 10px;white-space:nowrap;
 }
+/* 领主卡：里面多了一条堆叠战况条，所以文字那一列要能撑开 */
+.tile.lord{align-items:flex-start}
+.tile.lord .tx .stack{margin-top:9px}
+.tile.lord .tx span{line-height:1.5}
+.hit{color:var(--ok)}
+.tile .tx span b.warn{color:var(--bad)}
+/* 年级页顶部那座城堡 —— 比地图上的大，带标题 */
+.lordcastle{
+  display:block;width:132px;height:auto;margin:0 auto 6px;
+  overflow:visible;
+}
+.lordcastle .c-wall{fill:var(--paper);stroke:var(--ink);stroke-width:4;stroke-linejoin:round}
+.lordcastle .c-roof,.lordcastle .c-flag{stroke:var(--ink);stroke-width:4;stroke-linejoin:round}
+.lordcastle .c-gate{fill:var(--ink)}
+.lordcastle .c-win{fill:var(--sunken);stroke:var(--ink);stroke-width:2.5}
+.lordcastle .c-pole{stroke:var(--ink);stroke-width:4;stroke-linecap:round}
 
 /* ---------- 世界地图（首页）----------
    用 SVG 画六个地形块，形状是程序生成的不规则闭合曲线（不是圆）——
@@ -133,6 +149,67 @@ header{padding-block:22px 16px;display:flex;align-items:center;gap:12px;flex-wra
 .isle:focus{outline:none}
 .isle:focus-visible path{stroke:var(--g6);stroke-width:5}
 .isle.empty path{fill-opacity:.13;stroke-dasharray:9 7;stroke:var(--rule2)}
+
+/* 城堡：跟地形一样是"粗描边 + 实心色块"那套卡通画法，零素材。
+   墙体用纸色（不抢地形色），屋顶和旗用年级/战况的颜色。 */
+.castle{pointer-events:none}
+.castle .c-wall{fill:var(--paper);stroke:var(--ink);stroke-width:4;stroke-linejoin:round}
+.castle .c-roof{stroke:var(--ink);stroke-width:4;stroke-linejoin:round}
+.castle .c-gate{fill:var(--ink)}
+.castle .c-win{fill:var(--sunken);stroke:var(--ink);stroke-width:2.5}
+.castle .c-pole{stroke:var(--ink);stroke-width:4;stroke-linecap:round}
+.castle .c-flag{stroke:var(--ink);stroke-width:4;stroke-linejoin:round}
+/* 还没开启的年级：城堡画成灰的线稿，别让它看起来能打 */
+.isle.empty .castle .c-wall{fill:var(--sunken)}
+.isle.empty .castle .c-flag,
+.isle.empty .castle .c-roof{opacity:.45}
+
+/* 地图上的战况小字 */
+.isle .sub2{font-size:14px;font-weight:800;fill:var(--ink2)}
+.isle .sub2 .hit{fill:var(--ok)}
+.isle .sub2 .warn{fill:var(--bad)}
+.isle.empty .sub2{fill:var(--ink3)}
+
+/* ---------- 战况徽章（将领卡上那个小标签）---------- */
+.st{
+  display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:800;
+  border:2px solid var(--ink);border-radius:999px;padding:1px 8px;white-space:nowrap;
+}
+.st-new{background:var(--sunken);color:var(--ink2)}
+.st-eng{background:var(--warnbg);color:var(--warn)}
+.st-sup{background:var(--surface);color:var(--g2)}
+.st-dead{background:var(--okbg);color:var(--ok)}
+/* 有异动：**不是**灰色 —— 灰色等于"没打过"，那就把战果抹了。
+   用警示色 + 提示语，既保留"打下来过"，又明说"现在松了"。 */
+.st-un{background:var(--badbg);color:var(--bad)}
+.st-note{font-size:12.5px;font-weight:800;color:var(--bad)}
+/* 有异动的将领卡：描边也换成警示色，在一列卡里一眼能挑出来 */
+.kp.st-un{border-color:var(--bad)}
+.kp.st-dead{border-color:var(--ok)}
+/* 军团页顶部的图例：五个徽章 + 一句说明 */
+.legend{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:13.5px}
+.legend-tx{flex:1 1 100%;color:var(--ink2);font-size:13px;line-height:1.6;margin-top:2px}
+/* 结算页的战报行 */
+.warline{
+  margin-top:14px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+  font-size:15px;font-weight:700;
+}
+.warleft{flex:1 1 100%;font-size:13.5px;font-weight:700;color:var(--ink2);margin-top:2px}
+.warleft b{color:var(--g6)}
+
+/* 堆叠战况条：已消灭 / 有异动 / 压制中 / 遭遇中 / 未遭遇
+   ★ 不画成单一百分比条。单一百分比会出现"条满了但只消灭 3 个"这种
+     让人困惑（而且等于说谎）的画面，分开就一眼看得出打到哪了。 */
+.stack{
+  display:flex;height:14px;border:2px solid var(--ink);border-radius:999px;
+  overflow:hidden;background:var(--sunken);
+}
+.stack i{display:block;height:100%}
+.stack .s-destroyed{background:var(--ok)}
+.stack .s-unstable{background:var(--bad)}
+.stack .s-suppressing{background:var(--g2)}
+.stack .s-engaged{background:var(--warn)}
+.stack .s-untouched{background:transparent}
 .isle.empty{opacity:.72}
 .isle text{pointer-events:none;text-anchor:middle;
   font-family:var(--f-body);fill:var(--ink);font-weight:800}
@@ -406,6 +483,75 @@ const GRADE_THEME = {
   6: { name:'星野', icon:'✨', color:'var(--g6)', deco:['🌙','⭐'] },
 };
 
+/* ================= 战况：五档 =================
+   状态由**后端** mastery.state() 算（唯一实现），前端只负责翻译成人话和颜色。
+   ★ 前端**不许**自己拿 strength 再判一次 —— 两处判不一致时不会报错，
+     只会出现"领主说消灭了 3 个、点进去只有 2 个"这种要查半天的事。 */
+const BATTLE = {
+  untouched:   { label:'未遭遇', icon:'·',  cls:'st-new'  },
+  engaged:     { label:'遭遇中', icon:'⚔️', cls:'st-eng'  },
+  suppressing: { label:'压制中', icon:'🛡️', cls:'st-sup'  },
+  destroyed:   { label:'已消灭', icon:'🏳️', cls:'st-dead' },
+  unstable:    { label:'有异动', icon:'🚩', cls:'st-un'   },
+};
+const BATTLE_ORDER = ['destroyed', 'unstable', 'suppressing', 'engaged', 'untouched'];
+
+/* 一座城堡。纯手画 SVG —— 跟地形一样零素材。
+   本地坐标以 (0,0) 为城堡底部中心，约 120 宽 × 90 高，用 transform 摆放和缩放。
+   `flag` 决定旗子的填充：战况不同旗子不一样，这是"一眼看出这座城堡打到哪了"的
+   唯一视觉线索 —— 不用再画一套"城墙破损程度"。 */
+function castleSvg(flag, roof){
+  // 城墙：带四个垛口（锯齿顶）。没有垛口就只是一排方盒子，不像城堡。
+  const wall = 'M -34,26 L -34,-2 L -27,-2 L -27,-9 L -20,-9 L -20,-2 L -13,-2 '
+             + 'L -13,-9 L -6,-9 L -6,-2 L 6,-2 L 6,-9 L 13,-9 L 13,-2 L 20,-2 '
+             + 'L 20,-9 L 27,-9 L 27,-2 L 34,-2 L 34,26 Z';
+  return `
+    <g class="castle">
+      <!-- 两座塔：直筒 + 尖顶。尖顶比垛口好画，而且一眼就是个塔。 -->
+      <rect class="c-wall" x="-52" y="-16" width="20" height="42" rx="2"/>
+      <path class="c-roof" style="fill:${roof}" d="M -56,-16 L -42,-36 L -28,-16 Z"/>
+      <rect class="c-wall" x="32" y="-16" width="20" height="42" rx="2"/>
+      <path class="c-roof" style="fill:${roof}" d="M 28,-16 L 42,-36 L 56,-16 Z"/>
+      <!-- 主墙 -->
+      <path class="c-wall" d="${wall}"/>
+      <!-- 门洞：拱形。方门像仓库，拱门才像城堡 -->
+      <path class="c-gate" d="M -9,26 L -9,8 A 9 9 0 0 1 9,8 L 9,26 Z"/>
+      <rect class="c-win" x="-24" y="-8" width="6" height="10" rx="3"/>
+      <rect class="c-win" x="18" y="-8" width="6" height="10" rx="3"/>
+      <!-- 旗：旗杆 + 三角旗。旗色就是战况 -->
+      <line class="c-pole" x1="0" y1="-9" x2="0" y2="-62"/>
+      <path class="c-flag" style="fill:${flag}" d="M 1,-62 L 26,-54 L 1,-45 Z"/>
+    </g>`;
+}
+
+/* 从战况数字算"这座城堡打到哪了"。
+   ★ 只数**已消灭**的将领，不把"压制中"凑进分子 —— 分子是战绩，不是努力。 */
+function battleOf(subs){
+  const ready = subs.filter(s => s.ready);
+  const sum = (k) => ready.reduce((a, s) => a + (s[k] || 0), 0);
+  return {
+    total: ready.reduce((a, s) => a + s.count, 0),
+    destroyed: sum('destroyed'),
+    unstable: sum('unstable'),
+    open: ready.length,
+  };
+}
+
+/* 堆叠战况条。五段的宽度都按这颗将领的总数算，加起来正好 100%。
+   ★ 用堆叠而不是单一百分比：单一百分比会出现"条快满了但只消灭 2 个"，
+     那是在骗人。分开就能一眼看出"打到哪一步了"。 */
+function stackBar(s, color){
+  const total = s.count || 1;
+  const seg = (k) => {
+    const v = s[k] || 0;
+    return v > 0 ? `<i class="s-${k}" style="width:${(v / total * 100).toFixed(1)}%"></i>` : '';
+  };
+  return `<span class="stack" role="img"
+    aria-label="已消灭 ${s.destroyed}、压制中 ${s.suppressing}、遭遇中 ${s.engaged}、
+未遭遇 ${s.untouched}${s.unstable ? '、有异动 ' + s.unstable : ''}">${
+    BATTLE_ORDER.map(k => seg(k)).join('')}</span>`;
+}
+
 /* 地形块在地图上的摆位。**手工摆的，不是网格** —— 这是"地图"和"九宫格"的区别。
    宽屏沿用最初方案那份蛇形走位（视线从左上游到左下）；窄屏改成一列纵排，
    否则在手机上每个地形只有拇指大，字都看不清。 */
@@ -545,6 +691,30 @@ const GLOSSARY = {
      + '**答错就从零开始** —— 不是为了惩罚你，是想让你知道：\n'
      + '这个连对是你真的一道道答出来的。',
   },
+  legion: {
+    q: '军团是什么？',
+    a: '一个领主手下的**全部人马** —— 也就是这一科的所有知识点。\n'
+     + '这个数是**有限的**：打一个少一个，看得见尽头。\n'
+     + '比起"再练十道题"，看得见尽头的东西更容易打完。',
+  },
+  general: {
+    q: '将领是什么？',
+    a: '**一个知识点**就是一个将领。\n'
+     + '把他的部队打光，就是把这个知识点真的学会了。\n'
+     + '点他就是去打他。',
+  },
+  kill: {
+    q: '怎么才算「消灭」一个将领？',
+    a: '**不是今天做对就算。**要等你隔了三周（21 天）还记得。\n'
+     + '今天做对、明天就忘，那叫"没打过"。\n'
+     + '按复习的节奏走，大约四次之后就到这条线 —— 刷一遍刷不出来。',
+  },
+  unstable: {
+    q: '「有异动」是什么意思？',
+    a: '**你以前打下来过，后来忘了。**\n'
+     + '所以不把你的战果抹掉 —— 那确实是你打下来的。\n'
+     + '但也不能骗你说还在手上，所以标成有异动：**去守一下就能收回来。**',
+  },
 };
 
 /** 生成一个术语问号按钮。没有词条就返回空串。 */
@@ -663,34 +833,53 @@ async function renderHome(){
   const isles = CATALOG.grades.map((row, i) => {
     const t = GRADE_THEME[row.grade] || { icon:'📘', name:'', color:'var(--g1)', deco:[] };
     const p = pos[i] || { x:450, y:260, r:80 };
-    const ready = row.subjects.filter(s => s.ready);
-    const n = ready.reduce((a, s) => a + s.count, 0);
-    const empty = ready.length === 0;
+    const b = battleOf(row.subjects);
+    const empty = b.open === 0;
     const d = smoothClosedPath(islePoints(p.x, p.y, p.r, i * 2.7 + 1.3));
-    const sub = empty
-      ? '尚未开启'
-      : `${ready.map(s => s.name).join('·')} ${n} 个`;
-    // 装饰散落在岛内，位置也由序号决定 —— 刷新不会乱跳
+    // 装饰：城堡**左右各一个**，位置也由序号决定 —— 刷新不会乱跳。
+    //
+    // ★ 位置必须算着给，不能用极坐标随便散。城堡占着中间那一块：
+    //   横向 p.x±25.8（= 112 局部宽 × 0.46 缩放 / 2）。装饰放在 0.60r 处，
+    //   即使 r 最小（78）也有 ±46.8 —— 减去 emoji 半宽约 12 还剩 34.8，
+    //   离城堡的 25.8 有近 9px 余量。
+    //   （第一版用极坐标 126°/223° 散着放，结果城堡画上去之后正好压住，
+    //    是测试里那条"城堡不许压文字"抓出来的。）
     const deco = (t.deco || []).map((e, k) => {
-      const a = 2.2 + k * 2.6, rr = p.r * 0.56;
-      return `<text class="deco" x="${(p.x + Math.cos(a) * rr).toFixed(0)}"
-        y="${(p.y + Math.sin(a) * rr * 0.8 + 6).toFixed(0)}">${e}</text>`;
+      const side = k ? 1 : -1;
+      return `<text class="deco" x="${(p.x + side * p.r * 0.60).toFixed(0)}"
+        y="${(p.y - 4).toFixed(0)}">${e}</text>`;
     }).join('');
+
+    // 旗色 = 战况：全灭金旗，有异动红旗下加提醒，没开打用年级色
+    const allDone = !empty && b.destroyed === b.total && b.unstable === 0;
+    const flag = allDone ? 'var(--star)'
+               : b.unstable > 0 ? 'var(--bad)'
+               : empty ? 'var(--rule2)' : t.color;
+
+    // 第二行：已消灭 X / Y。比原来的"三个学科名 107 个"具体得多 ——
+    // 而且**有限**（能打完），这是这套叙事真正起作用的地方。
+    const line2 = empty
+      ? '尚未开启'
+      : `<tspan class="hit">已消灭 ${b.destroyed}</tspan> / ${b.total} 员将领`
+        + (b.unstable ? ` <tspan class="warn">· ${b.unstable} 处异动</tspan>` : '');
+
     return `<g class="isle ${empty ? 'empty' : ''}" data-go="#/${row.grade}"
       tabindex="0" role="button"
-      aria-label="${row.grade} 年级 ${esc(t.name)}${empty ? '（尚未开启）' : ''}"
+      aria-label="${row.grade} 年级 ${esc(t.name)}${empty ? '（尚未开启）'
+        : '，已消灭 ' + b.destroyed + ' / ' + b.total + ' 员将领'}"
       style="--c:${t.color}">
       <path d="${d}"/>
       ${deco}
-      <text class="ico" x="${p.x}" y="${p.y - 4}">${t.icon}</text>
-      <text class="nm" x="${p.x}" y="${p.y + 28}">${row.grade} 年级</text>
-      <text class="sub" x="${p.x}" y="${p.y + 48}">${esc(t.name)} · ${esc(sub)}</text>
+      <g transform="translate(${p.x},${p.y - 14}) scale(0.46)">${castleSvg(flag, t.color)}</g>
+      <text class="nm" x="${p.x}" y="${p.y + 36}">${row.grade} 年级</text>
+      <text class="sub" x="${p.x}" y="${p.y + 54}">${esc(t.name)}</text>
+      <text class="sub2" x="${p.x}" y="${p.y + 74}">${line2}</text>
     </g>`;
   }).join('');
 
   $('#main').innerHTML = `
-    <p class="why" style="margin:0 0 10px">点一块地形进去。每个年级里分三科，
-    每科是一张知识点图 —— 点到最后是一道题。</p>
+    <p class="why" style="margin:0 0 10px">点一块地形进去 —— 每块地上有一座城堡，
+    城里坐着三个领主（语文/数学/英语）。把领主的将领一个个打下来，军团就打完了。</p>
     <svg class="worldmap" viewBox="${view}" role="group"
          aria-label="一到六年级的世界地图">${isles}</svg>`;
   wireGo();
@@ -727,6 +916,13 @@ async function renderSubjects(grade){
   if (!row){ $('#main').innerHTML = `<div class="err"><b>没有 ${grade} 年级</b></div>`; return; }
 
   const t = GRADE_THEME[grade] || {};
+  const b = battleOf(row.subjects);
+  const allDone = b.total > 0 && b.destroyed === b.total && b.unstable === 0;
+  const castle = `<svg class="lordcastle" viewBox="-70 -75 140 115" role="img"
+      aria-label="${grade} 年级城堡">${
+      castleSvg(allDone ? 'var(--star)' : (t.color || 'var(--g1)'),
+                t.color || 'var(--g1)')}</svg>`;
+
   const cards = row.subjects.map(s => {
     const icon = SUBJECT_ICON[s.key] || '📘';
     if (!s.ready){
@@ -734,18 +930,28 @@ async function renderSubjects(grade){
       // 显示出来，地图才是完整的，也看得出东西在长。
       return `<button class="tile locked" disabled aria-disabled="true">
         <span class="ico" style="background:var(--sunken)">${icon}</span>
-        <span class="tx"><b>${esc(s.name)}</b><span>还没有内容</span></span>
+        <span class="tx"><b>${esc(s.name)}领主</b><span>还没有军团</span></span>
         <span class="soon">即将支持</span>
       </button>`;
     }
-    return `<button class="tile" data-go="#/${grade}/${s.key}">
+    // ★ 这是 <div role="button">，不是 <button>：卡片里要放"术语问号"那个小按钮，
+    //   而 **HTML 不允许 button 嵌 button**（浏览器会自作主张闭合外层，结构就乱了）。
+    //   代价是键盘可达性要自己接 —— wireGo() 里已经处理 role="button" 那支。
+    return `<div class="tile lord" role="button" tabindex="0" data-go="#/${grade}/${s.key}"
+      aria-label="${esc(s.name)}领主，军团 ${s.count} 员将领，已消灭 ${s.destroyed}">
       <span class="ico" style="background:${t.color}22">${icon}</span>
-      <span class="tx"><b>${esc(s.name)}</b><span>${s.count} 个知识点</span></span>
-    </button>`;
+      <span class="tx">
+        <b>${esc(s.name)}领主${infoBtn('legion')}</b>
+        <span>军团 ${s.count} 员将领 · <b class="hit">已消灭 ${s.destroyed}</b>
+          ${s.unstable ? `<b class="warn">· ${s.unstable} 处异动</b>` : ''}</span>
+        ${stackBar(s, t.color)}
+      </span>
+    </div>`;
   }).join('');
 
   $('#main').innerHTML = `
-    <p class="why" style="margin:0 0 18px">${t.icon||''} ${grade} 年级 —— 选一科。</p>
+    <p class="why" style="margin:0 0 14px">${castle}
+    ${grade} 年级（${esc(t.name||'')}）的城堡 —— 三位领主各带一个军团。</p>
     <div class="grid">${cards}</div>`;
   wireGo();
 }
@@ -779,9 +985,13 @@ async function renderMap(grade, subject){
     html += `<div class="unit"><h2>${esc(unit)}<span class="badge">${list.length}</span></h2><div class="grid">`;
     for (const n of list){
       const p = P[n.id] || { strength:0, seen:0, describe:'还没测过', due_now:false };
+      // ★ 状态直接读后端给的 p.state，前端**不重新判一遍**（判两遍就会漂）。
+      const st = BATTLE[p.state] ? p.state : 'untouched';
+      const b = BATTLE[st];
       const pct = Math.round((p.strength || 0) * 100);
       const color = p.seen ? (p.due_now ? 'var(--warn)' : t.color) : 'var(--rule2)';
-      html += `<div class="kp card ${p.due_now ? 'due-now' : ''}" data-kp="${esc(n.id)}"
+      html += `<div class="kp card ${p.due_now ? 'due-now' : ''} kp-${b.cls}"
+        data-kp="${esc(n.id)}" data-state="${st}"
         role="button" tabindex="0">
         <span class="nm">${esc(n.name)}</span>
         <span class="bar"><i style="width:${Math.max(pct, 3)}%;background:${color}"></i></span>
@@ -789,13 +999,28 @@ async function renderMap(grade, subject){
           <span class="${p.due_now ? 'due' : ''}">${esc(p.describe || '还没测过')}</span>
           <span>权重 ${n.weight || '-'}${infoBtn('weight')}</span>
         </span>
+        <span class="meta">
+          <span class="st ${b.cls}">${b.icon} ${b.label}</span>
+          ${st === 'unstable' ? '<span class="st-note">阵地在松动 —— 该去守一下</span>' : ''}
+        </span>
       </div>`;
     }
     html += '</div></div>';
   }
+  // 五位一体的图例。五个徽章不解释就等于没有 —— 孩子看到 🛡️ 只会猜。
+  // 三个问号分别解释"将领""怎么才算消灭""有异动"，都是他真会问的问题。
+  const legend = `<p class="why legend">${BATTLE_ORDER.map(k =>
+      `<span class="st ${BATTLE[k].cls}">${BATTLE[k].icon} ${BATTLE[k].label}</span>`
+    ).join('')}
+    <span class="legend-tx">每位${'将领'}${infoBtn('general')}就是一个知识点 ——
+    把它的部队打光，这个军团就少一员大将。
+    要一直记到忘不掉才算${'消灭'}${infoBtn('kill')}；
+    打下来又忘了的会显示${'有异动'}${infoBtn('unstable')}，去守一下就能收回来。</span></p>`;
+
   // 包一层 .units：宽屏时单元块并排（见那段 CSS 的注释）
-  $('#main').innerHTML = html ? `<div class="units">${html}</div>`
-                              : '<p>这张图还是空的。</p>';
+  $('#main').innerHTML = html
+    ? `${legend}<div class="units">${html}</div>`
+    : '<p>这张图还是空的。</p>';
   document.querySelectorAll('[data-kp]').forEach(b => {
     b.onclick = (e) => {
       if (e.target.closest('.info')) return;   // 点问号只弹解释，别顺带把知识点打开
@@ -1309,6 +1534,7 @@ async function finishSession(){
       <span class="num">${Math.round((LAST.strength || 0) * 100)}</span>
       <span><span class="lab">掌握度${infoBtn('mastery')}</span><br><span class="v">${esc(LAST.describe)}</span></span>
     </div>
+    ${warReport()}
     ${efficiencyHtml()}
     ${prereqHtml()}
     <div class="row" style="margin-top:20px">${queueButtons()}</div>
@@ -1337,6 +1563,36 @@ function fmtSecs(s){
  *   没有"一般人要练 4 次"这种编的。编的数字孩子迟早识破，
  *   而那时候连真的那部分他也不会信了。
  */
+/* 结算页的战报：这一仗把这位将领打成什么样了。
+   ★ 放在「省下来的力气」**上面**、掌握度**下面** —— 它是这一节的即时结果，
+     而效率块是那个更重要的论点，不能被挤掉，也不该被战报盖住。 */
+function warReport(){
+  const st = LAST && LAST.state;
+  if (!BATTLE[st]) return '';
+  const b = BATTLE[st];
+  const name = SESSION.kp ? SESSION.kp.name : '这一位将领';
+  const line = {
+    destroyed:   `「${name}」拿下了 —— 部队打光。`,
+    unstable:    `「${name}」的阵地刚才有动静，现在稳住了。`,
+    suppressing: `「${name}」被打散了大半，还差最后一下。`,
+    engaged:     `「${name}」刚交上手，还没分出胜负。`,
+    untouched:   `「${name}」还没打。`,
+  }[st] || '';
+  // 军团还剩几员将领没打下来。数字由**后端**给（和领主卡用的是同一份统计），
+  // 前端不自己数 —— 两处各数一遍就会出现"领主说剩 4 个、战报说剩 5 个"。
+  const lg = LAST.legion;
+  let left = '';
+  if (lg && typeof lg.count === 'number'){
+    const rest = lg.count - lg.destroyed;
+    left = `<span class="warleft">这个军团还剩 <b>${rest}</b> 员将领没打下来`
+         + `${lg.unstable ? `（其中 ${lg.unstable} 处需要回防）` : ''}</span>`;
+  }
+  return `<div class="warline">
+    <span class="st ${b.cls}">${b.icon} ${b.label}</span>
+    <span>${esc(line)}</span>${left}
+  </div>`;
+}
+
 function efficiencyHtml(){
   if (!LAST) return '';
   const bits = [];

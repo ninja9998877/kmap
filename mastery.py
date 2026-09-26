@@ -37,6 +37,31 @@ _RATING_Q = {AGAIN: 2, HARD: 3, GOOD: 4, EASY: 5}
 EF_MIN = 1.3
 EF_START = 2.5
 
+# ---------------------------------------------------------------- 「学会了」这条线
+#
+# ★★ 这个数字只有**一处**。strength()（图上颜色多深）和 state()（军团消灭没有）
+#    必须用它，不能各写一个字面量 —— 两处一旦漂开，症状是
+#    "界面说他会了、图说他不会"，而且**不会报错**。
+#
+# 为什么是 21 天：间隔重复的间隔是按"能记住多久"推出来的。撑到 21 天还记得，
+# 对一个小学学期来说就是真的记住了（再长也没有额外信息）。
+# 按 SM-2 的 GOOG-E 台阶（间隔 ×2.5）：1 → 6 → 15 → 38 → 95，
+# 所以 21 天这条线落在第 3 次成功复习（15 天）和第 4 次（38 天）之间。
+FULL_DAYS = 21
+
+# 分档的另外两条线，同样贴着 SM-2 的台阶：
+#   6 = 第二次成功复习的间隔；取到 6 天算"压制中"
+SUPPRESS_DAYS = 6
+
+# 状态取值。前端和聚合都用这几个字符串，别在别处再定义一遍。
+ST_UNTOUCHED = 'untouched'      # 未遭遇：还没打过
+ST_ENGAGED = 'engaged'          # 遭遇中
+ST_SUPPRESSING = 'suppressing'  # 压制中
+ST_DESTROYED = 'destroyed'      # 已消灭：间隔撑到 FULL_DAYS
+ST_UNSTABLE = 'unstable'        # 有异动：**曾经**消灭过，后来忘了
+
+STATES = (ST_UNTOUCHED, ST_ENGAGED, ST_SUPPRESSING, ST_DESTROYED, ST_UNSTABLE)
+
 # 中等难度（difficulty=3）下，孩子答一道题的典型用时。第一次见面没有历史，
 # 用这个兜底；之后全部由他自己的实际用时校准。
 DEFAULT_PACE = 35.0
@@ -120,6 +145,13 @@ def update(card: dict, rating: int, today: datetime.date = None) -> dict:
     card['ef'] = max(EF_MIN, ef)
     card['interval'] = interval
     card['due'] = (today + datetime.timedelta(days=interval)).isoformat()
+
+    # ★ 历史最大间隔。**只加这一个字段，就是为了 state() 能说出"有异动"。**
+    #   答错时 SM-2 把 interval 打回 1，光看当前值是分不出
+    #   "从没学会过"和"学会过又忘了"的 —— 而这两件事对孩子完全不一样：
+    #   前者要教，后者只要去守一下。
+    #   老卡片没有这个字段 -> 当成 0 -> 不会被误判成"曾经消灭过"（安全默认）。
+    card['best'] = max(card.get('best') or 0, interval)
     return card
 
 
@@ -129,14 +161,52 @@ def strength(card: dict) -> float:
     """0~1，图上颜色用。**由间隔算，不由答对次数算。**
 
     这是整个设计里最要紧的一条区别：刷一遍不会让图变深，只有隔了很久还记得
-    才会。21 天封顶 —— 再长对"小学一个学期"来说没有额外信息。
+    才会。撑到 FULL_DAYS 天封顶 —— 再长对"小学一个学期"来说没有额外信息。
+
+    ★ 注意它在 interval == FULL_DAYS 时**正好等于 1.0**。所以"颜色最深"和
+      state() 的"已消灭"是同一条线，不是两个标准。
     """
     if not card or not card.get('seen'):
         return 0.0
     interval = max(0, card.get('interval') or 0)
     if interval <= 0:
         return 0.0
-    return min(1.0, math.log1p(interval) / math.log1p(21))
+    return min(1.0, math.log1p(interval) / math.log1p(FULL_DAYS))
+
+
+def state(card: dict) -> str:
+    """这个知识点现在是什么战况。**状态只有这一处实现。**
+
+    给两拨人用：军团的战况统计（后端聚合）、将领卡片上的徽章（前端）。
+    分档逻辑要是前端再算一遍，两处不一致的时候**不会报错**，
+    只会出现"总数对不上"这种要查半天的事。
+
+    | 状态 | 判据 | 人话 |
+    |---|---|---|
+    | untouched  | 没测过 / 间隔 0 | 未遭遇 |
+    | engaged    | 间隔 1–5        | 遭遇中 |
+    | suppressing| 间隔 6–20       | 压制中 |
+    | destroyed  | 间隔 ≥ 21       | 已消灭 |
+    | unstable   | 曾经到过 21，现在掉下来了 | 有异动 |
+
+    ★ `unstable` 是**为了不说谎**：孩子确实打下来过，所以不把战果一抹了之；
+      但他现在确实忘了，所以也不能继续显示"已消灭"。
+      `best`（历史最大间隔）就是为它记的 —— update() 里维护。
+    """
+    if not card or not card.get('seen'):
+        return ST_UNTOUCHED
+    interval = max(0, card.get('interval') or 0)
+    best = max(0, card.get('best') or 0)
+    if interval >= FULL_DAYS:
+        return ST_DESTROYED
+    # 曾经撑到过 FULL_DAYS，现在掉下来了
+    if best >= FULL_DAYS:
+        return ST_UNSTABLE
+    if interval <= 0:
+        return ST_UNTOUCHED
+    if interval >= SUPPRESS_DAYS:
+        return ST_SUPPRESSING
+    return ST_ENGAGED
 
 
 def is_due(card: dict, today: datetime.date = None) -> bool:
@@ -239,6 +309,56 @@ def _selftest() -> int:
     if not strength(long_card) > 0.9:
         print('  ✗ 60 天间隔应该接近满格，实际 %.3f' % strength(long_card))
         bad += 1
+
+    # ---- 战况分档（state）----
+    #
+    # 分档错了整张图的语义就错了，所以边界逐个钉。三个边界都贴着 SM-2 的台阶：
+    #   1（第一次）  6（第二次）  15（第三次）  38（第四次）
+    # 所以 6 和 21 这两条线正好落在台阶之间，不会出现"刚做完一次就跳两档"。
+    def _c(**kw):
+        return dict(new_card(), seen=1, reps=1, **kw)
+
+    check('没测过 -> 未遭遇', state(new_card()), ST_UNTOUCHED)
+    check('空卡片 -> 未遭遇', state(None), ST_UNTOUCHED)
+    check('间隔 1 -> 遭遇中', state(_c(interval=1)), ST_ENGAGED)
+    check('间隔 5 -> 遭遇中（5 还是 6 的分界下面）', state(_c(interval=5)), ST_ENGAGED)
+    check('间隔 6 -> 压制中（正好是第二次复习的台阶）', state(_c(interval=6)), ST_SUPPRESSING)
+    check('间隔 20 -> 压制中', state(_c(interval=20)), ST_SUPPRESSING)
+    check('间隔 21 -> 已消灭（= FULL_DAYS）', state(_c(interval=21)), ST_DESTROYED)
+    check('间隔 95 -> 已消灭', state(_c(interval=95)), ST_DESTROYED)
+
+    # ★ 这条是"颜色最深"和"已消灭"必须是**同一条线**的守门员。
+    #   两边一旦漂开，会出现"图上颜色满了但军团没消灭"这种不报错的怪事。
+    check('strength(21) 正好是 1.0', strength(_c(interval=21)), 1.0)
+    check('strength(20) 还没满', strength(_c(interval=20)) < 1.0, True)
+    if (state(_c(interval=21)) == ST_DESTROYED) != (strength(_c(interval=21)) >= 1.0):
+        print('  ✗ "已消灭"和"颜色满格"不是同一条线 —— 两套判据漂开了')
+        bad += 1
+
+    # ---- 有异动：打下来过，后来忘了 ----
+    beaten = dict(new_card(), seen=4, reps=4, interval=38, best=38,
+                  due='2026-11-01', lapses=0)
+    check('撑到 38 天 -> 已消灭', state(beaten), ST_DESTROYED)
+    lapsed = dict(beaten, interval=1, reps=0, lapses=1)     # 答错一次：SM-2 打回 1 天
+    check('★ 消灭过又忘了 -> 有异动', state(lapsed), ST_UNSTABLE)
+    check('有异动不是"遭遇中"（两者对孩子意义完全不同）',
+          state(lapsed) != ST_ENGAGED, True)
+    # 从来没见过 21 天的，即使间隔也是 1，也不能被误报成"有异动"
+    check('一直没学会 -> 遭遇中，不是有异动', state(_c(interval=1, best=6)), ST_ENGAGED)
+    # 老卡片没有 best 字段（这个字段是后加的）—— 必须当成"从没消灭过"
+    check('老卡片缺 best -> 不误判成有异动', state(_c(interval=1)), ST_ENGAGED)
+
+    # ---- best 由 update() 维护 ----
+    grew = new_card()
+    for i in range(4):
+        grew = update(grew, GOOD, d0)
+    if (grew.get('best') or 0) < 21:
+        print('  ✗ 连续答对 4 次之后 best 应该 >= 21，实际 %r' % grew.get('best'))
+        bad += 1
+    peak = grew.get('best')
+    after = update(grew, AGAIN, d0)
+    check('答错后 best 不回退（战果要留着）', after.get('best'), peak)
+    check('答错后当前间隔打回 1', after['interval'], 1)
 
     # ---- 纯函数：不该改传入的卡片 ----
     original = dict(card)
