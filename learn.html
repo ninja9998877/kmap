@@ -191,16 +191,22 @@ header{padding-block:22px 16px;display:flex;align-items:center;gap:12px;flex-wra
    圆看起来像"关卡按钮"，有起伏的轮廓才像地图。全部纯代码，零素材。 */
 .worldmap{width:100%;height:auto;display:block;overflow:visible}
 .isle{cursor:pointer;transition:transform .12s ease}
-.isle path{
-  fill:var(--c); fill-opacity:.30; stroke:var(--ink); stroke-width:3.5;
-  stroke-linejoin:round;
-}
+/* 底色层和描边层**分开**：素材图夹在它们中间（底下是底色、上面描边）。
+   原来是一条 `.isle path` 同时管填充和描边 —— 加了素材之后会变成两条描边叠着。 */
+.isle .fill{fill:var(--c);fill-opacity:.30;stroke:none}
+.isle .line{fill:none;stroke:var(--ink);stroke-width:3.5;stroke-linejoin:round}
+.isle .isleart{pointer-events:none}
 .isle:hover{transform:translateY(-4px)}
-.isle:hover path{fill-opacity:.46}
+.isle:hover .fill{fill-opacity:.46}
 .isle:active{transform:translateY(2px)}
 .isle:focus{outline:none}
-.isle:focus-visible path{stroke:var(--g6);stroke-width:5}
-.isle.empty path{fill-opacity:.13;stroke-dasharray:9 7;stroke:var(--rule2)}
+.isle:focus-visible .line{stroke:var(--g6);stroke-width:5}
+.isle.empty .fill{fill-opacity:.13}
+.isle.empty .line{stroke-dasharray:9 7;stroke:var(--rule2)}
+/* 深色模式下把地形素材压暗一点 —— 亮绿/亮蓝的岛在黑底上会刺眼 */
+@media (prefers-color-scheme:dark){
+  .isle .isleart{filter:brightness(.72) saturate(.85)}
+}
 
 /* 城堡：跟地形一样是"粗描边 + 实心色块"那套卡通画法，零素材。
    墙体用纸色（不抢地形色），屋顶和旗用年级/战况的颜色。 */
@@ -527,12 +533,12 @@ let QUEUE = { due: [], count: 0 };
 /* 六个年级 = 六个地形。沿用最初方案那套"地名"设定 ——
    它本来就是为"一张能点进去的大地图"设计的，比"一年级/二年级"有画面得多。 */
 const GRADE_THEME = {
-  1: { name:'草地', icon:'🌱', color:'var(--g1)', deco:['🌿','🍀'] },
-  2: { name:'海岛', icon:'🏝️', color:'var(--g2)', deco:['🌊','⛵'] },
-  3: { name:'沙漠', icon:'🏜️', color:'var(--g3)', deco:['🌵','🐫'] },
-  4: { name:'森林', icon:'🌲', color:'var(--g4)', deco:['🍄','🦌'] },
-  5: { name:'高山', icon:'⛰️', color:'var(--g5)', deco:['🏔️','🦅'] },
-  6: { name:'星野', icon:'✨', color:'var(--g6)', deco:['🌙','⭐'] },
+  1: { name:'草地', icon:'🌱', color:'var(--g1)', deco:['🌿','🍀'], art:'1-grass' },
+  2: { name:'海岛', icon:'🏝️', color:'var(--g2)', deco:['🌊','⛵'], art:'2-island' },
+  3: { name:'沙漠', icon:'🏜️', color:'var(--g3)', deco:['🌵','🐫'], art:'3-desert' },
+  4: { name:'森林', icon:'🌲', color:'var(--g4)', deco:['🍄','🦌'], art:'4-forest' },
+  5: { name:'高山', icon:'⛰️', color:'var(--g5)', deco:['🏔️','🦅'], art:'5-mountain' },
+  6: { name:'星野', icon:'✨', color:'var(--g6)', deco:['🌙','⭐'], art:'6-starry' },
 };
 
 /* ================= 战况：五档 =================
@@ -975,12 +981,30 @@ async function renderHome(){
       : `<tspan class="hit">已消灭 ${b.destroyed}</tspan> / ${b.total} 员将领`
         + (b.unstable ? ` <tspan class="warn">· ${b.unstable} 处异动</tspan>` : '');
 
+    // 地形素材：裁进岛屿轮廓里。
+    // ★ 兜底是**天然**的，不需要 onerror —— 底下的色块路径先画，素材盖在上面；
+    //   素材没画出来（404）就什么都不盖，看到的就是原来的色块。
+    //   这比"探一下图在不在"更稳：不依赖任何加载回调。
+    // ★ preserveAspectRatio="slice" 让正方形的图**铺满**岛屿外接框再裁，
+    //   不会因为岛屿是扁的（纵向压了 0.84）就把图压扁。
+    const pad = p.r * 1.16;
+    const artBox = `x="${(p.x - pad).toFixed(0)}" y="${(p.y - pad * 0.84).toFixed(0)}"`
+                 + ` width="${(pad * 2).toFixed(0)}" height="${(pad * 1.68).toFixed(0)}"`;
+    const art = (empty || !t.art) ? '' : `
+      <clipPath id="isclip-${i}"><path d="${d}"/></clipPath>
+      <g clip-path="url(#isclip-${i})">
+        <image class="isleart" href="art/terrain-${t.art}.png" ${artBox}
+               preserveAspectRatio="xMidYMid slice"/>
+      </g>`;
+
     return `<g class="isle ${empty ? 'empty' : ''}" data-go="#/${row.grade}"
       tabindex="0" role="button"
       aria-label="${row.grade} 年级 ${esc(t.name)}${empty ? '（尚未开启）'
         : '，已消灭 ' + b.destroyed + ' / ' + b.total + ' 员将领'}"
       style="--c:${t.color}">
-      <path d="${d}"/>
+      <path class="fill" d="${d}"/>
+      ${art}
+      <path class="line" d="${d}"/>
       ${deco}
       <g transform="translate(${p.x},${p.y - 14}) scale(0.46)">${castleSvg(flag, t.color)}</g>
       <text class="nm" x="${p.x}" y="${p.y + 36}">${row.grade} 年级</text>

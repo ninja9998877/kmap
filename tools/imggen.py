@@ -59,10 +59,9 @@ def main():
         size = sys.argv[5] if len(sys.argv) > 5 else '1024x1024'
         raw = Path(prompt_file).read_text(encoding='utf-8')
         # 提示词文件里允许写注释（存的是**当时那一次用的原文**，注释说明怎么重画）。
-        # 分隔线  之上是注释，之下才是真正发给模型的正文。
-        prompt = (raw.split('---', 1)[1] if '
----
-' in raw else raw).strip()
+        # 分隔线 `---` 之上是注释，之下才是真正发给模型的正文。
+        parts = raw.split('\n---\n', 1)
+        prompt = (parts[1] if len(parts) > 1 else raw).strip()
         print('模型 %s  尺寸 %s  提示词 %d 字' % (model, size, len(prompt)))
         payload = {
             'model': model, 'prompt': prompt, 'n': 1, 'size': size,
