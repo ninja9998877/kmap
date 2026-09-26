@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>六年知识地图</title>
+<!--
+  刻意**不引任何外链**（没有 Google Fonts、没有图片 CDN）。
+  这是个只在局域网跑的服务，首屏不该先去等一个可能连不上的外网请求。
+  于是：字体走系统栈，图形走 **emoji + 内联 SVG + 纯 CSS**，一个字节都不用下载。
+
+  卡通风格靠三件事，不需要美术素材：
+    ① 粗描边（3px 深色）
+    ② 实心偏移阴影（0 4px 0 深色），按下去会真的"陷进去"
+    ③ 大圆角 + 高饱和色块
+-->
+<style>
+:root{
+  --paper:#FDF7EC; --surface:#FFFFFF; --sunken:#F2EADA;
+  --ink:#2B2118; --ink2:#5C5044; --ink3:#8C7F70;
+  --rule:#E0D3BE; --rule2:#C9B99F;
+  --g1:#5FB84A; --g2:#3FA9D6; --g3:#E8A33D;
+  --g4:#3FA37F; --g5:#8B77D4; --g6:#E2604A;
+  --ok:#3F9A5E; --okbg:#DFF3E2;
+  --bad:#D9542F; --badbg:#FCE4DA;
+  --warn:#B07C1E; --warnbg:#FCF0D2;
+  --star:#F5B731;
+  --shadow:0 4px 0 var(--ink);
+  --f-body:-apple-system,"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
+  --f-mono:ui-monospace,Consolas,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#1A1614; --surface:#26211D; --sunken:#332C26;
+    --ink:#F0E7DA; --ink2:#C4B7A6; --ink3:#948877;
+    --rule:#453C33; --rule2:#5A4E43;
+    --g1:#7CD166; --g2:#63C4E8; --g3:#F0BB5E;
+    --g4:#5FC49B; --g5:#A996EE; --g6:#F4816B;
+    --ok:#6FC48A; --okbg:#1F3A28;
+    --bad:#F08A66; --badbg:#3D2118;
+    --warn:#E7C070; --warnbg:#3A2E12;
+    --star:#F5C748;
+    --shadow:0 4px 0 rgba(0,0,0,.55);
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+
+/* ---------- 安卓浏览器特有的几件事 ----------
+   孩子用的是安卓平板，这几条在桌面 Chrome 上看不出来： */
+*{-webkit-tap-highlight-color:transparent}   /* 点按钮时那层蓝色方块 */
+.isle,.tile,.kp,.opt,.btn,.chip,.dots{
+  -webkit-user-select:none;user-select:none; /* 长按别把按钮文字选中 */
+  -webkit-touch-callout:none;                /* 也别弹长按菜单 */
+}
+/* 题干**不**禁选中 —— 孩子可能想把题复制出去问人 */
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--f-body); font-size:17px; line-height:1.7;
+  /* ★ 四边都要让开安全区。原来只管了左右（横屏时刘海在侧面），
+     上下没管 —— 底部会被手势条压住，顶部会被状态栏盖住。
+     `env()` 在没有安全区的设备上返回 0，所以这四行在电脑上等于没写。
+     （需要有 viewport-fit=cover，见 <meta name="viewport">。） */
+  padding-inline: max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-right));
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: calc(88px + env(safe-area-inset-bottom));
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:900px;margin-inline:auto}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+:focus-visible{outline:3px solid var(--g6);outline-offset:3px;border-radius:6px}
+
+/* ---------- 顶栏 ---------- */
+header{padding-block:22px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font-size:22px;font-weight:900;letter-spacing:-.02em;display:flex;align-items:center;gap:9px}
+.brand .mascot{font-size:26px;line-height:1}
+.crumb{font-size:14px;color:var(--ink2);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.crumb button{color:var(--ink2);text-decoration:underline;text-underline-offset:3px;
+  padding:8px 4px;min-height:44px}
+.crumb .sep{color:var(--ink3)}
+.spacer{flex:1}
+.chip{
+  display:inline-flex;align-items:center;gap:7px;min-height:44px;
+  background:var(--surface);border:3px solid var(--ink);border-radius:999px;
+  padding:6px 16px;font-size:15px;font-weight:800;box-shadow:var(--shadow);
+}
+.chip:active{transform:translateY(4px);box-shadow:0 0 0 var(--ink)}
+.chip .n{font-family:var(--f-mono);color:var(--g6)}
+
+/* ---------- 通用卡片 ---------- */
+.card{
+  background:var(--surface);border:3px solid var(--ink);border-radius:20px;
+  padding:20px;box-shadow:var(--shadow);
+}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+
+/* 大板块按钮：年级 / 学科 */
+.tile{
+  display:flex;align-items:center;gap:16px;text-align:left;
+  background:var(--surface);border:3px solid var(--ink);border-radius:20px;
+  padding:18px 20px;box-shadow:var(--shadow);min-height:88px;
+  transition:transform .1s ease;
+}
+.tile:hover{transform:translateY(-2px)}
+.tile:active{transform:translateY(4px);box-shadow:0 0 0 var(--ink)}
+.tile .ico{
+  font-size:34px;line-height:1;width:58px;height:58px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  border:3px solid var(--ink);border-radius:16px;
+}
+.tile .tx{flex:1;min-width:0}
+.tile .tx b{display:block;font-size:19px;font-weight:900}
+.tile .tx span{display:block;font-size:13.5px;color:var(--ink2);margin-top:2px}
+.tile.locked{opacity:.62;background:var(--sunken);box-shadow:0 4px 0 var(--rule2)}
+.tile.locked:active{transform:none;box-shadow:0 4px 0 var(--rule2)}
+.tile .soon{
+  font-size:12px;font-weight:800;color:var(--ink3);
+  border:2px dashed var(--rule2);border-radius:999px;padding:3px 10px;white-space:nowrap;
+}
+
+/* ---------- 世界地图（首页）----------
+   用 SVG 画六个地形块，形状是程序生成的不规则闭合曲线（不是圆）——
+   圆看起来像"关卡按钮"，有起伏的轮廓才像地图。全部纯代码，零素材。 */
+.worldmap{width:100%;height:auto;display:block;overflow:visible}
+.isle{cursor:pointer;transition:transform .12s ease}
+.isle path{
+  fill:var(--c); fill-opacity:.30; stroke:var(--ink); stroke-width:3.5;
+  stroke-linejoin:round;
+}
+.isle:hover{transform:translateY(-4px)}
+.isle:hover path{fill-opacity:.46}
+.isle:active{transform:translateY(2px)}
+.isle:focus{outline:none}
+.isle:focus-visible path{stroke:var(--g6);stroke-width:5}
+.isle.empty path{fill-opacity:.13;stroke-dasharray:9 7;stroke:var(--rule2)}
+.isle.empty{opacity:.72}
+.isle text{pointer-events:none;text-anchor:middle;
+  font-family:var(--f-body);fill:var(--ink);font-weight:800}
+.isle .ico{font-size:40px}
+.isle .nm{font-size:21px;font-weight:900}
+.isle .sub{font-size:13px;font-weight:600;fill:var(--ink2)}
+.isle .deco{font-size:19px;opacity:.75}
+.isle.empty .nm{fill:var(--ink2)}
+
+/* 装饰：海面波纹和云，纯背景，不参与交互 */
+.map-deco{pointer-events:none}
+.map-deco .cloud{fill:var(--surface);stroke:var(--ink);stroke-width:2.5;opacity:.85}
+
+/* ---------- 知识点 ---------- */
+/* 单元块**并排**排。图谱是单元级的（多数单元只有 1 个知识点），
+   不并排的话横屏平板上每行就一张 240px 的卡，右边一大片空白 ——
+   实测五个视口页高完全一样（1597），就是这个问题。 */
+.units{display:grid;gap:6px 22px;grid-template-columns:1fr;align-items:start}
+@media (min-width:760px){ .units{grid-template-columns:1fr 1fr} }
+@media (min-width:1180px){ .units{grid-template-columns:1fr 1fr 1fr} }
+.unit{margin-top:20px}
+.unit h2{font-size:16px;font-weight:900;margin:0 0 12px;display:flex;align-items:center;gap:9px}
+.unit h2 .badge{
+  font-family:var(--f-mono);font-size:11px;font-weight:700;color:var(--ink2);
+  background:var(--sunken);border-radius:999px;padding:2px 9px;
+}
+/* 注意：.kp 是 <div role="button">，不是 <button> ——
+   因为卡片里要放"术语问号"那个小按钮，而 **HTML 不允许 button 嵌 button**
+   （浏览器会自作主张把外层闭合，结构就乱了）。所以键盘可达性要自己接。 */
+.kp{display:flex;flex-direction:column;gap:10px;text-align:left;cursor:pointer}
+.kp .nm{font-weight:800;font-size:16px;line-height:1.35}
+.kp .bar{height:10px;border-radius:999px;background:var(--sunken);
+  border:2px solid var(--ink);overflow:hidden}
+.kp .bar i{display:block;height:100%;border-radius:999px;transition:width .5s ease}
+.kp .meta{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--ink2)}
+.kp .due{color:var(--warn);font-weight:800}
+.kp.due-now{border-color:var(--warn)}
+.kp.due-now .bar i{background:var(--warn)}
+
+/* ---------- 做题 ---------- */
+.qtop{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.qtop .where{font-size:13px;color:var(--ink2);font-weight:700}
+.qtop .combo{
+  margin-left:auto;font-weight:900;font-size:14px;color:var(--g6);
+  display:flex;align-items:center;gap:5px;
+}
+.dots{display:flex;gap:5px}
+.dots i{width:12px;height:12px;border-radius:50%;background:var(--sunken);
+  border:2px solid var(--ink3)}
+.dots i.ok{background:var(--ok);border-color:var(--ink)}
+.dots i.no{background:var(--bad);border-color:var(--ink)}
+.dots i.now{outline:3px solid var(--g6);outline-offset:2px}
+.stem{font-size:20px;line-height:1.8;font-weight:600;margin:0 0 20px}
+.opts{display:flex;flex-direction:column;gap:11px;margin-bottom:18px}
+.opt{
+  display:flex;gap:13px;align-items:flex-start;text-align:left;
+  background:var(--surface);border:3px solid var(--ink);border-radius:16px;
+  padding:14px 16px;min-height:56px;box-shadow:var(--shadow);font-size:17px;line-height:1.5;
+}
+.opt:active{transform:translateY(4px);box-shadow:0 0 0 var(--ink)}
+.opt .k{
+  flex:none;width:30px;height:30px;border-radius:9px;background:var(--sunken);
+  border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;
+  font-family:var(--f-mono);font-weight:800;font-size:14px;
+}
+.opt.pick{border-color:var(--g6);background:#FFF4E8}
+.opt.tick{background:var(--okbg);border-color:var(--ok)}
+.opt.cross{background:var(--badbg);border-color:var(--bad)}
+.opt:disabled{cursor:default}
+.fillrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.fillrow input{
+  font:inherit;font-family:var(--f-mono);font-size:24px;font-weight:700;
+  padding:12px 16px;border:3px solid var(--ink);border-radius:16px;
+  background:var(--surface);color:var(--ink);width:min(240px,58vw);text-align:center;
+  box-shadow:var(--shadow);
+}
+.fillrow .u{font-size:18px;font-weight:700;color:var(--ink2)}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--g6);color:#fff;border:3px solid var(--ink);border-radius:16px;
+  padding:14px 30px;min-height:56px;font-weight:900;font-size:17px;
+  box-shadow:var(--shadow);
+}
+.btn:active{transform:translateY(4px);box-shadow:0 0 0 var(--ink)}
+.btn:disabled{opacity:.45;cursor:default;transform:none}
+.btn.ghost{background:var(--surface);color:var(--ink)}
+.btn.small{padding:9px 18px;min-height:44px;font-size:15px;border-radius:13px}
+.row{display:flex;gap:11px;align-items:center;flex-wrap:wrap}
+
+/* ---------- 反馈 ---------- */
+.fb{margin-top:20px;border-top:3px dashed var(--rule);padding-top:18px}
+.verdict{font-weight:900;font-size:20px;display:flex;align-items:center;gap:10px}
+.fb.good .verdict{color:var(--ok)}
+.fb.bad .verdict{color:var(--bad)}
+.verdict .face{font-size:30px}
+.ansline{margin-top:10px;font-size:16px}
+.ansline code{
+  font-family:var(--f-mono);font-weight:800;background:var(--sunken);
+  border:2px solid var(--ink);border-radius:9px;padding:3px 11px;
+}
+.why{margin-top:12px;font-size:16px;line-height:1.8;color:var(--ink2)}
+.note{
+  margin-top:16px;background:var(--warnbg);border:3px solid var(--ink);
+  border-radius:16px;padding:15px 17px;
+}
+.note .lb{
+  font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--warn);margin-bottom:7px;
+}
+.note .ls{font-size:16.5px;font-weight:700;line-height:1.6}
+.note .lo{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.note .lo button{
+  background:var(--surface);border:3px solid var(--ink);border-radius:13px;
+  padding:11px 15px;min-height:48px;text-align:left;font-size:16px;font-weight:600;
+}
+.note .lo button:active{transform:translateY(3px)}
+.note .lo button.tick{background:var(--okbg);border-color:var(--ok)}
+.note .lo button.cross{background:var(--badbg);border-color:var(--bad)}
+.praise{margin-top:11px;font-size:15.5px;color:var(--ink2);
+  border-left:5px solid var(--warn);padding-left:12px}
+
+/* ---------- 结算 ---------- */
+.stars{display:flex;gap:10px;justify-content:center;margin:18px 0 6px;font-size:44px;line-height:1}
+.stars .on{animation:pop .45s cubic-bezier(.2,1.6,.5,1) both}
+.stars .off{opacity:.25;filter:grayscale(1)}
+.stars .on:nth-child(2){animation-delay:.12s}
+.stars .on:nth-child(3){animation-delay:.24s}
+@keyframes pop{from{transform:scale(.2) rotate(-25deg);opacity:0}to{transform:scale(1) rotate(0)}}
+.big{font-size:26px;font-weight:900;text-align:center;margin:8px 0 4px}
+.sub{text-align:center;color:var(--ink2);font-size:15.5px}
+.mv{display:flex;align-items:center;gap:16px;margin-top:20px;
+  background:var(--sunken);border:3px solid var(--ink);border-radius:16px;padding:15px 18px}
+.mv .num{font-size:34px;font-weight:900;font-family:var(--f-mono)}
+.mv .lab{font-size:12px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink2)}
+.mv .v{font-size:15px;font-weight:700}
+
+/* ---------- 术语问号 ----------
+   视觉上小（不抢戏），但**热区要够手指点** —— 用 ::after 把可点范围撑到 44px，
+   这样既好看又好按。 */
+.info{
+  width:19px;height:19px;border-radius:50%;border:2px solid var(--ink3);
+  background:transparent;color:var(--ink3);font-size:12px;font-weight:900;
+  display:inline-flex;align-items:center;justify-content:center;
+  vertical-align:1px;margin-left:5px;padding:0;line-height:1;
+  position:relative;flex:none;cursor:pointer;
+}
+.info::after{content:'';position:absolute;inset:-13px}   /* 热区 ≈45px */
+.info:hover{border-color:var(--ink);color:var(--ink)}
+.info:active{background:var(--sunken)}
+
+dialog{
+  border:3px solid var(--ink);border-radius:20px;padding:22px 22px 18px;
+  max-width:min(430px,88vw);background:var(--surface);color:var(--ink);
+  box-shadow:0 8px 0 rgba(43,33,24,.18);
+}
+dialog::backdrop{background:rgba(20,14,8,.5)}
+dialog h3{margin:0 0 10px;font-size:18px;font-weight:900}
+dialog p{margin:0 0 18px;font-size:16px;line-height:1.85;color:var(--ink2)}
+dialog p b{color:var(--ink)}
+
+/* ---------- 状态 ---------- */
+/* 平板屏幕大，字跟着大一点 —— 10 寸屏上 17px 躺着看是偏小的 */
+@media (min-width:1000px){
+  body{font-size:18px}
+  .stem{font-size:22px}
+  .opt{font-size:18px}
+  .kp .nm{font-size:17px}
+}
+
+.loading{display:flex;align-items:center;gap:13px;padding:30px 6px;color:var(--ink2)}
+.spin{width:22px;height:22px;border:3px solid var(--rule2);
+  border-top-color:var(--g6);border-radius:50%;animation:sp .8s linear infinite;flex:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+.err{background:var(--badbg);border:3px solid var(--bad);border-radius:16px;
+  padding:16px 18px;color:var(--bad);font-size:16px;line-height:1.7;font-weight:600}
+.err b{display:block;margin-bottom:5px;font-size:17px}
+.err code{font-family:var(--f-mono);font-size:14px;word-break:break-all;
+  background:var(--surface);border-radius:6px;padding:2px 7px}
+footer{margin-top:44px;padding-top:18px;border-top:3px dashed var(--rule);
+  font-size:13px;color:var(--ink3);display:flex;gap:18px;flex-wrap:wrap}
+footer a{color:var(--ink3)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="brand"><span class="mascot" id="mascot">🦉</span>六年知识地图</span>
+  <span class="spacer"></span>
+  <button class="chip" id="dueBtn" hidden>📅 今天该复习 <span class="n" id="dueN">0</span></button>
+  <span id="dueInfo"></span>
+</header>
+
+<nav class="crumb" id="crumb" hidden></nav>
+
+<main id="main"><div class="loading"><span class="spin"></span>正在读…</div></main>
+
+<footer>
+  <span id="srcLine"></span>
+  <a href="/plan">最初的产品方案 →</a>
+</footer>
+</div>
+
+<script>
+'use strict';
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s == null ? '' : s)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+let CATALOG = null;
+let GRAPH = null, SESSION = null, LAST = null;
+let QUEUE = { due: [], count: 0 };
+
+/* 六个年级 = 六个地形。沿用最初方案那套"地名"设定 ——
+   它本来就是为"一张能点进去的大地图"设计的，比"一年级/二年级"有画面得多。 */
+const GRADE_THEME = {
+  1: { name:'草地', icon:'🌱', color:'var(--g1)', deco:['🌿','🍀'] },
+  2: { name:'海岛', icon:'🏝️', color:'var(--g2)', deco:['🌊','⛵'] },
+  3: { name:'沙漠', icon:'🏜️', color:'var(--g3)', deco:['🌵','🐫'] },
+  4: { name:'森林', icon:'🌲', color:'var(--g4)', deco:['🍄','🦌'] },
+  5: { name:'高山', icon:'⛰️', color:'var(--g5)', deco:['🏔️','🦅'] },
+  6: { name:'星野', icon:'✨', color:'var(--g6)', deco:['🌙','⭐'] },
+};
+
+/* 地形块在地图上的摆位。**手工摆的，不是网格** —— 这是"地图"和"九宫格"的区别。
+   宽屏沿用最初方案那份蛇形走位（视线从左上游到左下）；窄屏改成一列纵排，
+   否则在手机上每个地形只有拇指大，字都看不清。 */
+const ISLE_WIDE = [
+  { x:172, y:150, r:92 }, { x:430, y:118, r:86 }, { x:686, y:168, r:86 },
+  { x:740, y:358, r:78 }, { x:428, y:390, r:86 }, { x:158, y:370, r:78 },
+];
+const ISLE_NARROW = [
+  { x:180, y:110, r:82 }, { x:180, y:300, r:82 }, { x:180, y:490, r:82 },
+  { x:180, y:680, r:82 }, { x:180, y:870, r:82 }, { x:180, y:1060, r:82 },
+];
+const NARROW_AT = 760;
+let _mapNarrow = null;      // 记住上次用的是哪套摆位，免得 resize 时反复重排
+
+function mapLayout(){
+  const narrow = window.innerWidth < NARROW_AT;
+  _mapNarrow = narrow;
+  return narrow
+    ? { pos: ISLE_NARROW, view: '0 0 360 1180', narrow: true }
+    : { pos: ISLE_WIDE, view: '50 10 800 500', narrow: false };
+}
+
+/** 一块地形的轮廓顶点。
+ *  两个不同频率的正弦叠加做起伏 —— **确定性**的（同一个 seed 每次一样），
+ *  所以刷新页面地图不会变样，但轮廓看起来是手绘的，不是圆规画的。 */
+function islePoints(cx, cy, r, seed){
+  const n = 14, pts = [];
+  for (let i = 0; i < n; i++){
+    const a = (i / n) * Math.PI * 2;
+    const wob = 1 + 0.10 * Math.sin(seed + i * 1.7)
+                  + 0.055 * Math.sin(seed * 2.1 + i * 3.1);
+    pts.push([cx + Math.cos(a) * r * wob, cy + Math.sin(a) * r * wob * 0.84]);
+  }
+  return pts;
+}
+
+/** Catmull-Rom 转贝塞尔：把折线抹成平滑的闭合曲线 */
+function smoothClosedPath(pts){
+  const n = pts.length;
+  const f = (v) => v.toFixed(1);
+  let d = `M ${f(pts[0][0])},${f(pts[0][1])}`;
+  for (let i = 0; i < n; i++){
+    const p0 = pts[(i - 1 + n) % n], p1 = pts[i];
+    const p2 = pts[(i + 1) % n], p3 = pts[(i + 2) % n];
+    d += ` C ${f(p1[0] + (p2[0] - p0[0]) / 6)},${f(p1[1] + (p2[1] - p0[1]) / 6)}`
+       + ` ${f(p2[0] - (p3[0] - p1[0]) / 6)},${f(p2[1] - (p3[1] - p1[1]) / 6)}`
+       + ` ${f(p2[0])},${f(p2[1])}`;
+  }
+  return d + ' Z';
+}
+const SUBJECT_ICON = { math:'➗', chinese:'📖', english:'🔤' };
+
+/* 填空框的提示要**按学科**给。
+   写死一个"数字"就是数学的假设 —— 语文题会变成让孩子往一个写着"数字"的框里
+   填"潮来时"，手机端还会弹出不对的键盘。 */
+const SUBJECT_HINT = {
+  math:    { ph: '数字',      mode: 'decimal' },
+  chinese: { ph: '字词',      mode: 'text' },
+  english: { ph: '单词或词组', mode: 'text' },
+};
+
+/* ============================ 语气文案 ============================
+   这里只放**"怎么跟孩子说这句话"**，不放"说的是什么"。
+
+   ★ 题目、答案、讲解、教学建议、先修提示 —— 那些是**严谨内容**，由服务端
+     生成，这里一个字都不改。改的只是按钮、反馈词、状态提示这类"壳"。
+
+   基调（六年级，12 岁）：**简短、平视、有点游戏感**。
+   不用"你真棒""真聪明"（肉麻且捧的是天赋不是努力），
+   也不堆网络梗（过时快，而且家长看着别扭）。
+   ───────────────────────────────────────────────────────── */
+const TONE = {
+  reading:    '正在打开…',
+  drawingMap: '正在画地图…',
+  making:     (name) => `在给你出「${name}」的题`,
+  makingSub:  '题是现出的，出完还要把答案重算一遍验过 —— 十几秒',
+
+  right:      '对了',
+  wrong:      '再想想',
+  combo:      (n) => `连对 ${n}`,
+
+  next:       '下一题',
+  seeResult:  '看看结果',
+  stopHere:   '今天先到这',
+  backMap:    '回到知识图',
+  again:      '再来一次',
+  skip:       '先不做',
+
+  allRight:   '一个没错',
+  oneOff:     '就差一道',
+  half:       '一半一半',
+  failed:     '这次没过',
+
+  allRightSub: '这节过了。不过真正的考验是过几天你还记不记得 —— 那才算真会。',
+  oneOffSub:   '基本会了。回头看看错的那道卡在哪。',
+  halfSub:     '这个点还没稳，过两天再来一次。',
+  failedSub:   '别急 —— 这多半说明前面有个更基础的点没打牢，不是这个点本身难。',
+
+  reviewDone: '今天的复习清空了',
+};
+
+/* ============================ 术语解释 ============================
+   点词右上角的小问号看它是啥意思。
+
+   ★ 措辞是**给孩子看的**，不是写给大人的说明书：
+     用他自己的话，讲清"这个词对我有什么用"，而不是下定义。
+     定义他看完还是不知道跟自巼有什么关系。
+   ───────────────────────────────────────────────────────── */
+const GLOSSARY = {
+  weight: {
+    q: '权重是什么？',
+    a: '**这个词在考试里出现的次数。**\n'
+     + '5 分的，差不多每次都考；1 分的，偶尔露个脸。\n'
+     + '所以分高的先弄会 —— 花一样的力气，回报差好几倍。',
+  },
+  mastery: {
+    q: '掌握度是什么？',
+    a: '**你隔了多久还记得。**\n'
+     + '今天做对了不算数 —— 明天忘了就等于白学。\n'
+     + '所以要等你隔了很久还记得，这个数才涨得上去。',
+  },
+  due: {
+    q: '「该复习」是怎么算出来的？',
+    a: '大脑忘东西是有规律的，系统算着你**快忘了**的时候提醒你。\n'
+     + '这时候看一眼记得最牢。\n'
+     + '**没到期的就不用碰** —— 碰了是白费力气。',
+  },
+  prereq: {
+    q: '「先修」是什么意思？',
+    a: '**学它之前得先会的东西。**\n'
+     + '比如不会算圆的面积，圆柱的体积一步都动不了。\n'
+     + '卡住的时候，往回找比硬啃有用得多。',
+  },
+  combo: {
+    q: '连对是怎么算的？',
+    a: '连着答对几道就记几。\n'
+     + '**答错就从零开始** —— 不是为了惩罚你，是想让你知道：\n'
+     + '这个连对是你真的一道道答出来的。',
+  },
+};
+
+/** 生成一个术语问号按钮。没有词条就返回空串。 */
+function infoBtn(term){
+  const g = GLOSSARY[term];
+  if (!g) return '';
+  return `<button type="button" class="info" data-term="${term}"`
+       + ` aria-label="解释：${esc(g.q)}" title="${esc(g.q)}">?</button>`;
+}
+
+/** 极其有限的 markdown：只认 **加粗** 和换行。够用，也不引库。 */
+function mdLite(s){
+  return esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+}
+
+function openGlossary(term){
+  const g = GLOSSARY[term];
+  if (!g) return;
+  let dlg = document.getElementById('glossary');
+  if (!dlg){
+    dlg = document.createElement('dialog');
+    dlg.id = 'glossary';
+    document.body.appendChild(dlg);
+  }
+  dlg.innerHTML = `<h3>${esc(g.q)}</h3><p>${mdLite(g.a)}</p>
+    <form method="dialog"><button class="btn">知道了</button></form>`;
+  dlg.showModal();
+}
+
+/* 问号用**事件委托**挂 —— 卡片是动态渲染的，逐个绑迟早漏（这个项目已经栽过
+   "后插入的 DOM 事件没绑上"一次）。委托挂在 document 上，永远不会漏。 */
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('.info');
+  if (b){
+    e.stopPropagation();          // 别让点问号顺带把知识点打开
+    openGlossary(b.dataset.term);
+  }
+});
+
+async function api(path, body){
+  const r = await fetch(path, body === undefined ? {} : {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(body)
+  });
+  const d = await r.json().catch(() => ({error:'服务返回了非 JSON 内容'}));
+  if (d.error) throw new Error(d.error);
+  return d;
+}
+
+/* ============================ 路由 ============================
+   用 hash 而不是纯内存状态：能后退、能分享、刷新不丢。
+   #/            → 六个年级
+   #/6           → 六年级的三个学科
+   #/6/math      → 六年级数学的知识点
+*/
+function parseHash(){
+  const parts = (location.hash || '#/').replace(/^#\/?/, '').split('/').filter(Boolean);
+  return { grade: parts[0] ? Number(parts[0]) : null, subject: parts[1] || null };
+}
+function go(hash){ location.hash = hash; }
+
+async function route(){
+  const { grade, subject } = parseHash();
+  SESSION = null;
+  if (!grade) return renderHome();
+  if (!subject) return renderSubjects(grade);
+  return renderMap(grade, subject);
+}
+window.addEventListener('hashchange', route);
+
+/* ============================ 面包屑 ============================ */
+function renderCrumb(grade, subject){
+  const el = $('#crumb');
+  const parts = [];
+  if (grade){
+    const t = GRADE_THEME[grade] || {};
+    parts.push(`<button data-go="#/">全部年级</button><span class="sep">›</span>`);
+    parts.push(subject
+      ? `<button data-go="#/${grade}">${t.icon||''} ${grade} 年级</button><span class="sep">›</span>`
+      : `<b>${t.icon||''} ${grade} 年级</b>`);
+  }
+  if (subject && GRAPH) parts.push(`<b>${esc(GRAPH.subject_name)}</b>`);
+  el.innerHTML = parts.join(' ');
+  el.hidden = parts.length === 0;
+  el.querySelectorAll('[data-go]').forEach(b => { b.onclick = () => go(b.dataset.go); });
+}
+
+/* ============================ 第一级：年级 ============================ */
+async function loadCatalog(){
+  if (CATALOG) return CATALOG;
+  try{ CATALOG = await api('/api/catalog'); }
+  catch(e){ CATALOG = null; throw e; }
+  return CATALOG;
+}
+
+async function refreshQueue(){
+  try{ QUEUE = await api('/api/queue'); }
+  catch(e){ QUEUE = { due: [], count: 0 }; }
+  const btn = $('#dueBtn'), n = QUEUE.count || 0;
+  // 问号放在 chip **外面**：chip 自己就是个 button，里面再放 button 是非法嵌套
+  const di = $('#dueInfo');
+  if (di) di.innerHTML = n ? infoBtn('due') : '';
+  if (n){ btn.hidden = false; $('#dueN').textContent = n; btn.onclick = startQueue; }
+  else { btn.hidden = true; btn.onclick = null; }
+}
+
+async function renderHome(){
+  renderCrumb(null, null);
+  $('#main').innerHTML = `<div class="loading"><span class="spin"></span>${TONE.reading}</div>`;
+  try{ await loadCatalog(); }
+  catch(e){ $('#main').innerHTML = `<div class="err"><b>读不到目录</b>${esc(e.message)}</div>`; return; }
+  await refreshQueue();
+
+  const { pos, view } = mapLayout();
+
+  const isles = CATALOG.grades.map((row, i) => {
+    const t = GRADE_THEME[row.grade] || { icon:'📘', name:'', color:'var(--g1)', deco:[] };
+    const p = pos[i] || { x:450, y:260, r:80 };
+    const ready = row.subjects.filter(s => s.ready);
+    const n = ready.reduce((a, s) => a + s.count, 0);
+    const empty = ready.length === 0;
+    const d = smoothClosedPath(islePoints(p.x, p.y, p.r, i * 2.7 + 1.3));
+    const sub = empty
+      ? '尚未开启'
+      : `${ready.map(s => s.name).join('·')} ${n} 个`;
+    // 装饰散落在岛内，位置也由序号决定 —— 刷新不会乱跳
+    const deco = (t.deco || []).map((e, k) => {
+      const a = 2.2 + k * 2.6, rr = p.r * 0.56;
+      return `<text class="deco" x="${(p.x + Math.cos(a) * rr).toFixed(0)}"
+        y="${(p.y + Math.sin(a) * rr * 0.8 + 6).toFixed(0)}">${e}</text>`;
+    }).join('');
+    return `<g class="isle ${empty ? 'empty' : ''}" data-go="#/${row.grade}"
+      tabindex="0" role="button"
+      aria-label="${row.grade} 年级 ${esc(t.name)}${empty ? '（尚未开启）' : ''}"
+      style="--c:${t.color}">
+      <path d="${d}"/>
+      ${deco}
+      <text class="ico" x="${p.x}" y="${p.y - 4}">${t.icon}</text>
+      <text class="nm" x="${p.x}" y="${p.y + 28}">${row.grade} 年级</text>
+      <text class="sub" x="${p.x}" y="${p.y + 48}">${esc(t.name)} · ${esc(sub)}</text>
+    </g>`;
+  }).join('');
+
+  $('#main').innerHTML = `
+    <p class="why" style="margin:0 0 10px">点一块地形进去。每个年级里分三科，
+    每科是一张知识点图 —— 点到最后是一道题。</p>
+    <svg class="worldmap" viewBox="${view}" role="group"
+         aria-label="一到六年级的世界地图">${isles}</svg>`;
+  wireGo();
+}
+
+function wireGo(){
+  document.querySelectorAll('[data-go]').forEach(b => {
+    b.onclick = () => go(b.dataset.go);
+    // SVG 里的 <g> 不是按钮控件，键盘得自己接一下
+    if (b.getAttribute('role') === 'button'){
+      b.onkeydown = (e) => {
+        if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); go(b.dataset.go); }
+      };
+    }
+  });
+}
+
+/* 窄屏换一套摆位 —— 地图是重排过的，不是缩小的。只在首页时跟着窗口变。 */
+window.addEventListener('resize', () => {
+  const narrow = window.innerWidth < NARROW_AT;
+  if (narrow === _mapNarrow) return;
+  _mapNarrow = narrow;
+  if (!parseHash().grade) renderHome();
+});
+
+/* ============================ 第二级：学科 ============================ */
+async function renderSubjects(grade){
+  renderCrumb(grade, null);
+  $('#main').innerHTML = `<div class="loading"><span class="spin"></span>${TONE.reading}</div>`;
+  try{ await loadCatalog(); }
+  catch(e){ $('#main').innerHTML = `<div class="err"><b>读不到目录</b>${esc(e.message)}</div>`; return; }
+
+  const row = CATALOG.grades.find(r => r.grade === grade);
+  if (!row){ $('#main').innerHTML = `<div class="err"><b>没有 ${grade} 年级</b></div>`; return; }
+
+  const t = GRADE_THEME[grade] || {};
+  const cards = row.subjects.map(s => {
+    const icon = SUBJECT_ICON[s.key] || '📘';
+    if (!s.ready){
+      // 空的格子**照常显示**，但点不动。藏起来的话，界面会随数据增长不断变形；
+      // 显示出来，地图才是完整的，也看得出东西在长。
+      return `<button class="tile locked" disabled aria-disabled="true">
+        <span class="ico" style="background:var(--sunken)">${icon}</span>
+        <span class="tx"><b>${esc(s.name)}</b><span>还没有内容</span></span>
+        <span class="soon">即将支持</span>
+      </button>`;
+    }
+    return `<button class="tile" data-go="#/${grade}/${s.key}">
+      <span class="ico" style="background:${t.color}22">${icon}</span>
+      <span class="tx"><b>${esc(s.name)}</b><span>${s.count} 个知识点</span></span>
+    </button>`;
+  }).join('');
+
+  $('#main').innerHTML = `
+    <p class="why" style="margin:0 0 18px">${t.icon||''} ${grade} 年级 —— 选一科。</p>
+    <div class="grid">${cards}</div>`;
+  wireGo();
+}
+
+/* ============================ 第三级：知识点 ============================ */
+async function renderMap(grade, subject){
+  $('#main').innerHTML = `<div class="loading"><span class="spin"></span>${TONE.drawingMap}</div>`;
+  try{
+    GRAPH = await api(`/api/graph?grade=${grade}&subject=${encodeURIComponent(subject)}`);
+  }catch(e){
+    renderCrumb(grade, null);
+    $('#main').innerHTML = `<div class="err"><b>这一科还没有内容</b>${esc(e.message)}</div>`;
+    return;
+  }
+  renderCrumb(grade, subject);
+  await refreshQueue();
+
+  const P = GRAPH.progress || {};
+  const order = unitOrder();
+  const byUnit = new Map();
+  for (const n of GRAPH.nodes){
+    if (!byUnit.has(n.unit)) byUnit.set(n.unit, []);
+    byUnit.get(n.unit).push(n);
+  }
+
+  const t = GRADE_THEME[grade] || {};
+  let html = '';
+  for (const unit of order){
+    const list = byUnit.get(unit);
+    if (!list) continue;
+    html += `<div class="unit"><h2>${esc(unit)}<span class="badge">${list.length}</span></h2><div class="grid">`;
+    for (const n of list){
+      const p = P[n.id] || { strength:0, seen:0, describe:'还没测过', due_now:false };
+      const pct = Math.round((p.strength || 0) * 100);
+      const color = p.seen ? (p.due_now ? 'var(--warn)' : t.color) : 'var(--rule2)';
+      html += `<div class="kp card ${p.due_now ? 'due-now' : ''}" data-kp="${esc(n.id)}"
+        role="button" tabindex="0">
+        <span class="nm">${esc(n.name)}</span>
+        <span class="bar"><i style="width:${Math.max(pct, 3)}%;background:${color}"></i></span>
+        <span class="meta">
+          <span class="${p.due_now ? 'due' : ''}">${esc(p.describe || '还没测过')}</span>
+          <span>权重 ${n.weight || '-'}${infoBtn('weight')}</span>
+        </span>
+      </div>`;
+    }
+    html += '</div></div>';
+  }
+  // 包一层 .units：宽屏时单元块并排（见那段 CSS 的注释）
+  $('#main').innerHTML = html ? `<div class="units">${html}</div>`
+                              : '<p>这张图还是空的。</p>';
+  document.querySelectorAll('[data-kp]').forEach(b => {
+    b.onclick = (e) => {
+      if (e.target.closest('.info')) return;   // 点问号只弹解释，别顺带把知识点打开
+      startSession(b.dataset.kp);
+    };
+    // <div role="button"> 没有原生键盘行为，Enter/Space 要自己接
+    b.onkeydown = (e) => {
+      if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); startSession(b.dataset.kp); }
+    };
+  });
+  window.scrollTo({ top:0, behavior:'instant' });
+}
+
+/* 单元顺序：按 yaml 里 units 段的顺序排；对不上的排最后 */
+function unitOrder(){
+  const out = [], known = new Set();
+  const u = GRAPH.units || {};
+  for (const term of ['上册', '下册']){
+    const block = u[term];
+    if (!block || !block['单元']) continue;
+    for (const x of block['单元']){
+      const full = term + ' ' + x.name;
+      out.push(full); known.add(full);
+    }
+  }
+  const extra = [...new Set(GRAPH.nodes.map(n => n.unit))]
+    .filter(x => x && !known.has(x));
+  return out.concat(extra);
+}
+
+/* ============================ 出题 ============================ */
+async function startQueue(){
+  const list = QUEUE.due || [];
+  if (!list.length) return;
+  const it = list[0];
+  await startSession(it.id, { list, index: 0 }, whereOf(it));
+}
+
+/* 一个知识点"在哪" —— 复习队列是**跨年级跨学科**的，不能只看当前这张图 */
+function whereOf(item){
+  return { grade: item.grade, subject: item.subject, name: item.name };
+}
+
+async function startSession(id, queue = null, where = null){
+  const node = (GRAPH && GRAPH.nodes.find(n => n.id === id)) || null;
+  const grade = (where && where.grade) || (GRAPH && GRAPH.grade) || 6;
+  const subject = (where && where.subject) || (GRAPH && GRAPH.subject) || 'math';
+  const name = (where && where.name) || (node ? node.name : id);
+
+  $('#main').innerHTML = `<div class="card"><div class="loading">
+    <span class="spin"></span>
+    <span>${TONE.making(name)}…<br>
+    <span style="font-size:14px;color:var(--ink3)">${TONE.makingSub}</span></span>
+  </div></div>`;
+
+  try{
+    const d = await api('/api/generate', { id, n: 5, grade, subject });
+    SESSION = {
+      qid: d.qid, kp: d.kp, faces: d.faces, questions: d.questions,
+      at: 0, ratings: new Array(d.questions.length).fill(null),
+      qStart: Date.now(), combo: 0, best: 0, queue,
+      grade, subject,      // 结算后"再练一次"要用它，不能依赖当时的 GRAPH
+    };
+    renderQuestion(0);
+  }catch(e){
+    $('#main').innerHTML = `<div class="card">${renderErr(e.message)}</div>
+      <div class="row" style="margin-top:16px">
+        <button class="btn ghost" onclick="backToMap()">← 回去</button></div>`;
+  }
+}
+
+function renderQuestion(i){
+  const q = SESSION.questions[i];
+  SESSION.at = i;
+  SESSION.qStart = Date.now();
+  const INPUT_HINT = SUBJECT_HINT[SESSION.subject] || SUBJECT_HINT.math;
+  const dots = SESSION.questions.map((_, k) => {
+    const r = SESSION.ratings[k];
+    const cls = r == null ? (k === i ? 'now' : '') : (r === 1 ? 'no' : 'ok');
+    return `<i class="${cls}"></i>`;
+  }).join('');
+  const where = SESSION.queue
+    ? `复习 ${SESSION.queue.index + 1}/${SESSION.queue.list.length} · ${esc(SESSION.kp.name)}`
+    : esc(SESSION.kp.name);
+  const combo = SESSION.combo >= 2
+    ? `<span class="combo">🔥 连对 ${SESSION.combo}</span>` : '';
+
+  let body = '';
+  if (q.type === 'choice'){
+    body = '<div class="opts">' + q.options.map((o, k) =>
+      `<button class="opt" data-k="${k}"><span class="k">${'ABCD'[k]}</span>
+       <span>${esc(o)}</span></button>`).join('') + '</div>';
+  }else{
+    // ★ 输入提示要按学科给。这里原来写死成 "数字"/inputmode=text —— 那是**数学的**
+    //   假设，结果语文题让孩子往一个写着"数字"的框里填"潮来时"。
+    //   手机端还会因为这个弹出不对的键盘。
+    body = `<div class="fillrow">
+      <input id="ansBox" inputmode="${INPUT_HINT.mode}" autocomplete="off"
+             enterkeyhint="done" placeholder="${INPUT_HINT.ph}">
+      <span class="u">${esc(q.unit || '')}</span></div>`;
+  }
+
+  $('#main').innerHTML = `<div class="card">
+    <div class="qtop">
+      <span class="where" data-kpname>${where}</span>
+      <span class="dots">${dots}</span>
+      ${combo}
+    </div>
+    <p class="stem">${esc(q.stem)}</p>
+    ${body}
+    <div class="row">
+      <button class="btn" id="submitBtn" disabled>确定</button>
+      <button class="btn ghost small" id="quitBtn">${TONE.skip}</button>
+    </div>
+    <div id="fb"></div>
+  </div>`;
+
+  const btn = $('#submitBtn');
+  const box = $('#ansBox');
+  if (q.type === 'choice'){
+    document.querySelectorAll('.opt').forEach(o => {
+      o.onclick = () => {
+        document.querySelectorAll('.opt').forEach(x => x.classList.remove('pick'));
+        o.classList.add('pick');
+        btn.disabled = false;
+      };
+    });
+  }else if (box){
+    box.focus();
+    // 安卓上输入法弹起来会把页面顶上去，输入框可能被挡在手势条或键盘后面。
+    // 聚焦后等键盘动画走完，再把它滚到视野中间。
+    const reveal = () => setTimeout(() => box.scrollIntoView(
+      { block: 'center', behavior: 'smooth' }), 320);
+    box.onfocus = reveal;
+    reveal();
+    box.oninput = () => { btn.disabled = !box.value.trim(); };
+    box.onkeydown = (e) => {
+      if (e.key === 'Enter' && !btn.disabled){ e.preventDefault(); btn.click(); }
+    };
+  }
+  btn.onclick = () => submitAnswer(i);
+  $('#quitBtn').onclick = backToMap;
+  window.scrollTo({ top:0, behavior:'instant' });
+}
+
+async function submitAnswer(i){
+  const q = SESSION.questions[i];
+  const btn = $('#submitBtn');
+  btn.disabled = true;
+
+  let payload, pickedK = null;
+  if (q.type === 'choice'){
+    const picked = document.querySelector('.opt.pick');
+    pickedK = picked ? Number(picked.dataset.k) : null;
+    // ★ 传**字母**不传下标：下标是 0 基，而服务端（和任何人）看到 "1" 都可能
+    //   理解成"第一个" —— 差一位就是"选了 B 却被判成 A、还告诉你正确答案是 B"。
+    payload = pickedK === null ? '' : 'ABCD'[pickedK];
+  }else{
+    payload = ($('#ansBox').value || '').trim();
+  }
+  const elapsed = (Date.now() - SESSION.qStart) / 1000;
+
+  let d;
+  try{
+    d = await api('/api/grade', { qid: SESSION.qid, i, answer: payload, elapsed });
+  }catch(e){
+    $('#fb').innerHTML = renderErr(e.message);
+    btn.disabled = false; return;
+  }
+  SESSION.ratings[i] = d.rating;
+  if (d.correct){ SESSION.combo += 1; SESSION.best = Math.max(SESSION.best, SESSION.combo); }
+  else SESSION.combo = 0;
+
+  if (q.type === 'choice'){
+    document.querySelectorAll('.opt').forEach(o => {
+      o.disabled = true;
+      o.classList.remove('pick');
+      if (Number(o.dataset.k) === d.answer_index) o.classList.add('tick');
+      else if (Number(o.dataset.k) === pickedK) o.classList.add('cross');
+    });
+  }else{
+    $('#ansBox').disabled = true;
+  }
+
+  const last = i >= SESSION.questions.length - 1;
+  const faces = ['😀','🎉','⭐','💪','🌟'];
+  let fb = `<div class="fb ${d.correct ? 'good' : 'bad'}">
+    <div class="verdict"><span class="face">${d.correct
+      ? (SESSION.combo >= 3 ? '🔥' : '🎉') : '🤔'}</span>${
+      d.correct ? (SESSION.combo >= 3 ? TONE.combo(SESSION.combo) : TONE.right)
+                : TONE.wrong}</div>`;
+  if (d.correct){
+    if (d.praise) fb += `<div class="praise">${esc(d.praise)}</div>`;
+  }else{
+    fb += `<div class="ansline">正确答案：<code>${esc(d.answer)}</code></div>`;
+    // ★ 必须判 `d.ladder.stem`，不能只判 `d.ladder` —— 空对象 `{}` 在 JS 里
+    //   是真值，只判它就会渲染出一个没题干、却带输入框的空梯子。
+    if (d.ladder && d.ladder.stem) fb += renderLadder(d.ladder);
+    if (d.teach) fb += renderTeach(d.teach);
+  }
+  if (q.why) fb += `<div class="why">${esc(q.why)}</div>`;
+  fb += '</div>';
+
+  fb += `<div class="row" style="margin-top:18px">
+    <button class="btn" id="nextBtn">${last ? TONE.seeResult : TONE.next + ' →'}</button></div>`;
+  $('#fb').innerHTML = fb;
+  // ★ 梯子的 DOM 是刚插进去的，事件必须在这里绑 —— 漏了这行，
+  //   梯子会显示出来但点了没反应（看起来像"功能没做完"）。
+  if (!d.correct && d.ladder) wireLadder(d.ladder);
+  $('#nextBtn').onclick = () => last ? finishSession() : renderQuestion(i + 1);
+  $('#nextBtn').focus();
+}
+
+/**
+ * 语文 / 英语答错后给的东西，**和数学不是一回事**。
+ *
+ *   数学是程序性知识 —— 卡住通常是某一步不熟，所以给"更小的一步"（梯子）。
+ *   语文是"没读到/不知道" —— 要**讲透考点 + 补上背景**，让他留下印象。
+ *   英语多半是没记住 —— 要**建立联想**，把它挂到他已经知道的东西上。
+ *
+ * 用同一个"更小的一步"糊三科是错的：语文的理解题没有步骤可拆，
+ * 英语拆句子也帮不了"记不住"。这三段文案由出题器按学科产出（见 tutor.SUBJECT_RULE）。
+ */
+function renderTeach(t){
+  const line = (label, text) => text
+    ? `<p class="why" style="margin:0 0 9px"><b>${label}</b>${esc(text)}</p>` : '';
+  let inner = '';
+  // 语文
+  inner += line('这道题考的是：', t.point);
+  inner += line('多知道一点：', t.background);
+  inner += line('再举个例子：', t.example);
+  // 英语
+  inner += line('怎么记：', t.link);
+  inner += line('什么时候用：', t.scene);
+  if (Array.isArray(t.similar) && t.similar.length){
+    inner += '<p class="why" style="margin:0"><b>别混了：</b></p><ul class="why" '
+           + 'style="margin:5px 0 0;padding-left:22px">'
+           + t.similar.map(s => `<li>${esc(s)}</li>`).join('') + '</ul>';
+  }
+  if (!inner) return '';
+  // 有 link 就是英语那套，否则是语文
+  const label = t.link ? '记一记' : '多讲两句';
+  return `<div class="note"><div class="lb">${label}</div>${inner}</div>`;
+}
+
+/* 梯子：不是"再试一次"，是**换一道更小的题**把他托上去（数学专用） */
+function renderLadder(L){
+  let h = `<div class="note"><div class="lb">先试试这个更小的</div>
+    <div class="ls">${esc(L.stem)}</div>`;
+  if (L.options){
+    h += '<div class="lo">' + L.options.map((o, k) =>
+      `<button data-k="${k}">${esc(o)}</button>`).join('') + '</div>';
+  }else{
+    h += `<div class="lo" style="flex-direction:row;align-items:center;gap:10px;flex-wrap:wrap">
+      <input id="ladBox" inputmode="text" autocomplete="off"
+        style="font:inherit;font-family:var(--f-mono);font-size:18px;font-weight:700;
+        padding:10px 14px;border:3px solid var(--ink);border-radius:13px;
+        background:var(--surface);color:var(--ink);width:150px;text-align:center"
+        placeholder="答案">
+      ${L.unit ? `<span style="font-size:15px;font-weight:700">${esc(L.unit)}</span>` : ''}
+      <button class="btn ghost small" id="ladGo">试试</button>
+    </div>`;
+  }
+  h += '<div id="ladFb"></div></div>';
+  return h;
+}
+
+/* 梯子只做即时对错反馈 —— 它不进掌握度，掌握度只看那 5 道正题 */
+function wireLadder(L){
+  const box = document.getElementById('ladBox');
+  const go = document.getElementById('ladGo');
+  const check = (val) => {
+    const want = String(L.answer == null ? '' : L.answer);
+    const ok = normNum(val) !== null && normNum(val) === normNum(want);
+    document.getElementById('ladFb').innerHTML = ok
+      ? '<div class="praise" style="border-color:var(--ok);color:var(--ok)">✓ 对了 —— 就是这个。带着它回到上面那道题再试一次。</div>'
+      : `<div class="praise">答案应该是 <b>${esc(want)}${esc(L.unit || '')}</b>。<br>${esc(L.why || '')}</div>`;
+  };
+  if (go && box){
+    go.onclick = () => check(box.value);
+    box.onkeydown = (e) => { if (e.key === 'Enter'){ e.preventDefault(); check(box.value); } };
+  }
+  document.querySelectorAll('.note .lo button[data-k]').forEach(b => {
+    b.onclick = () => {
+      const right = String(L.answer_index);
+      document.querySelectorAll('.note .lo button').forEach(x => x.classList.remove('pick'));
+      b.classList.add(b.dataset.k === right ? 'tick' : 'cross');
+      if (b.dataset.k !== right)
+        document.querySelector(`.note .lo button[data-k="${right}"]`).classList.add('tick');
+    };
+  });
+}
+/* 只做"看起来是不是同一个数"的宽松比较，够梯子用 */
+function normNum(s){
+  const t = String(s == null ? '' : s).replace(/[\s,，。]/g, '')
+    .replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0));
+  if (!t) return null;
+  const f = t.match(/-?\d+(\.\d+)?/);
+  return f ? String(parseFloat(f[0])) : null;
+}
+
+/* ============================ 结算 ============================ */
+async function finishSession(){
+  try{
+    LAST = await api('/api/finish', { qid: SESSION.qid });
+  }catch(e){
+    $('#main').innerHTML = `<div class="card">${renderErr(e.message)}</div>
+      <div class="row" style="margin-top:16px">
+      <button class="btn ghost" onclick="backToMap()">← 回去</button></div>`;
+    return;
+  }
+  const R = { 1:'明天再来', 2:'有点吃力', 3:'掌握了', 4:'很熟练' };
+  const okN = LAST.correct_count, tot = LAST.total;
+  const stars = okN === tot ? 3 : okN >= tot * 0.6 ? 2 : okN > 0 ? 1 : 0;
+  const starHtml = [0,1,2].map(k =>
+    `<span class="${k < stars ? 'on' : 'off'}">⭐</span>`).join('');
+
+  let head, sub;
+  if (okN === tot){ head = TONE.allRight; sub = TONE.allRightSub; }
+  else if (okN >= tot - 1){ head = TONE.oneOff; sub = TONE.oneOffSub; }
+  else if (okN * 2 >= tot){ head = TONE.half; sub = TONE.halfSub; }
+  else { head = TONE.failed; sub = TONE.failedSub; }
+
+  $('#main').innerHTML = `<div class="card">
+    <div class="stars">${starHtml}</div>
+    <div class="big">${head}</div>
+    <p class="sub">${sub}</p>
+    <p class="sub" style="margin-top:14px">
+      答对 <b>${okN}/${tot}</b> 道 ·
+      综合评档 <b>${R[LAST.rating] || LAST.rating}</b>${
+        SESSION.best >= 2 ? ` · 最高连对 <b>${SESSION.best}</b>` : ''}</p>
+    <div class="mv">
+      <span class="num">${Math.round((LAST.strength || 0) * 100)}</span>
+      <span><span class="lab">掌握度${infoBtn('mastery')}</span><br><span class="v">${esc(LAST.describe)}</span></span>
+    </div>
+    ${efficiencyHtml()}
+    ${prereqHtml()}
+    <div class="row" style="margin-top:20px">${queueButtons()}</div>
+  </div>`;
+  wireQueueButtons();
+  wirePrereq();
+  window.scrollTo({ top:0, behavior:'instant' });
+}
+
+/** 秒 → 人话 */
+function fmtSecs(s){
+  s = Math.round(s);
+  if (s < 60) return s + ' 秒';
+  const m = Math.floor(s / 60), r = s % 60;
+  return r ? `${m} 分 ${r} 秒` : `${m} 分`;
+}
+
+/**
+ * 效率叙事 —— 结算页最该说的其实不是"你答对几道"，而是**你省了多少力气**。
+ *
+ * 这条线是从一个观察来的：孩子对"全班第一"未必有兴趣，但对
+ * **"我用更少的力气拿到了同样的结果"**很有兴趣。那是**杠杆感**，不是攀比。
+ * 而且它比"努力"健康：努力是无底洞（总有人更努力），效率是可以一直赢的。
+ *
+ * ★ 这里每一个数字都是**真的**（后端从进度文件里算出来的），
+ *   没有"一般人要练 4 次"这种编的。编的数字孩子迟早识破，
+ *   而那时候连真的那部分他也不会信了。
+ */
+function efficiencyHtml(){
+  if (!LAST) return '';
+  const bits = [];
+
+  // ① 以前栽过、这次一次过 —— 成长的证据，比任何星星都硬
+  if (LAST.lapses_before >= 2 && LAST.correct_count === LAST.total){
+    bits.push(`「${esc(SESSION.kp.name)}」以前是你的坎 —— 你在这儿栽过 `
+      + `<b>${LAST.lapses_before}</b> 次。今天一次过。`);
+  }
+
+  // ② 比上次快（只在**真的**快了 30% 以上时才说）
+  if (LAST.last_secs && LAST.this_secs
+      && LAST.last_secs > LAST.this_secs * 1.3){
+    bits.push(`上一次做这一节花了 <b>${fmtSecs(LAST.last_secs)}</b>，`
+      + `这次 <b>${fmtSecs(LAST.this_secs)}</b>。`);
+  }
+
+  // ③ 不做什么，也是成绩 —— 这条最反直觉，但也最贴"省力气"
+  if (LAST.untouched >= 3){
+    bits.push(`这张图还有 <b>${LAST.untouched}</b> 个点今天不用碰 ——`
+      + ` 都没到期，现在做是白费。`);
+  }
+
+  if (!bits.length) return '';
+  return `<div class="note" style="background:var(--sunken);border-color:var(--ink2)">
+    <div class="lb" style="color:var(--ink2)">省下来的力气</div>
+    ${bits.map(b => `<p class="why" style="margin:0 0 8px;color:var(--ink)">${b}</p>`)
+           .join('')}
+  </div>`;
+}
+
+/**
+ * 没做好时，指回先修节点。
+ *
+ * ★ 这块是整个图谱里那些边**唯一真正派上用场**的地方。没有它，所谓的"先修图"
+ * 跟一堆按单元排的卡片没有区别 —— 而"一个知识点崩掉、根在更前面"恰恰是这套
+ * 东西最独特的价值（也是 prompt-3-questions.md 里写死的教学法）。
+ *
+ * 判断在服务端做（prereq_hint），这里只负责显示。
+ */
+function prereqHtml(){
+  const pre = LAST && LAST.prereq;
+  if (!pre || !pre.target) return '';
+  const t = pre.target;
+  const state = t.seen ? `掌握度 ${Math.round((t.strength || 0) * 100)}` : '还没测过';
+  const others = (pre.others || []).map(o =>
+    `<button class="btn ghost small" data-goto="${esc(o.id)}">${esc(o.name)}</button>`).join('');
+  return `<div class="note">
+    <div class="lb">先回去补这个更划算${infoBtn('prereq')}</div>
+    <div class="ls">${esc(t.name)}
+      <span style="color:var(--ink2);font-size:14px;font-weight:600"> · ${esc(state)}</span></div>
+    ${t.why ? `<p class="why" style="margin-top:8px;font-size:15px">${esc(t.why)}</p>` : ''}
+    <div class="row" style="margin-top:12px">
+      <button class="btn small" id="goPrereq">去做「${esc(t.name)}」</button>
+      ${others}
+    </div>
+  </div>`;
+}
+
+function wirePrereq(){
+  const go = document.getElementById('goPrereq');
+  const pre = LAST && LAST.prereq;
+  // 先修节点就在当前这张图里，所以跟着**这次 session** 的年级学科走，
+  // 而不是 GRAPH —— 刚刚可能是从复习队列跨学科跳过来的，GRAPH 未必是这一张
+  const where = { grade: SESSION.grade, subject: SESSION.subject };
+  if (go && pre && pre.target) go.onclick = () => startSession(pre.target.id, null, where);
+  document.querySelectorAll('[data-goto]').forEach(b => {
+    b.onclick = () => startSession(b.dataset.goto, null, where);
+  });
+}
+
+/**
+ * 复习队列里做完一节该往哪走。
+ * 关键：**下一个**是主按钮。否则复习三个知识点要"回地图 → 再点下一个"来回三次。
+ */
+function queueButtons(){
+  const q = SESSION.queue;
+  if (!q) {
+    return `<button class="btn" id="backMap">← ${TONE.backMap}</button>
+      <button class="btn ghost" onclick="againSame()">${TONE.again}</button>`;
+  }
+  const nx = q.index + 1;
+  if (nx < q.list.length){
+    return `<button class="btn" id="nextKp">下一个：${esc(q.list[nx].name)} →</button>
+      <button class="btn ghost" onclick="backToMap()">${TONE.stopHere}</button>`;
+  }
+  return `<button class="btn" id="doneQueue">${TONE.reviewDone} ✓</button>`;
+}
+
+function wireQueueButtons(){
+  const back = document.getElementById('backMap');
+  if (back) back.onclick = backToMap;
+  const q = SESSION.queue;
+  if (!q) return;
+  const next = document.getElementById('nextKp');
+  if (next) next.onclick = () => {
+    const item = q.list[q.index + 1];
+    startSession(item.id, { list: q.list, index: q.index + 1 }, whereOf(item));
+  };
+  const done = document.getElementById('doneQueue');
+  if (done) done.onclick = backToMap;
+}
+
+function againSame(){
+  const q = SESSION.queue;
+  const where = { grade: SESSION.grade, subject: SESSION.subject };
+  startSession(SESSION.kp.id, q ? { list: q.list, index: q.index } : null, where);
+}
+
+function backToMap(){
+  SESSION = null;
+  route();
+}
+
+function renderErr(msg){
+  return `<div class="err"><b>出问题了</b>${esc(msg)}
+    ${/key/i.test(msg) ? '<br><br>在 <code>kmap/.env</code> 里写一行 ' +
+      '<code>LLM_API_KEY=你的key</code> 然后重启服务即可。' : ''}</div>`;
+}
+
+route();
+</script>
+</body>
+</html>

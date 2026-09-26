@@ -1,0 +1,1989 @@
+<title>六年知识地图</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;900&display=swap">
+<style>
+:root{
+  --paper:#EDEFEC; --surface:#FFFFFF; --surface2:#E2E7E3; --sunken:#E7EAE6;
+  --ink:#16233A; --ink2:#454F60; --ink3:#6F7987;
+  --rule:#D2D8D3; --rule2:#B7C0BA;
+  --c1:#7FA05A; --c1t:#4C6931;
+  --c2:#4E8FB4; --c2t:#26607F;
+  --c3:#C99B36; --c3t:#8A6714;
+  --c4:#2E6B60; --c4t:#1D4A42;
+  --c5:#7A6FA6; --c5t:#514778;
+  --c6:#C1543C; --c6t:#8C3620;
+  --ok:#3F7A5E; --okbg:#DFEBE2;
+  --bad:#B4432F; --badbg:#F4E1DC;
+  --idle:#98A1AA;
+  --shadow:0 1px 2px rgba(22,35,58,.06), 0 8px 24px -14px rgba(22,35,58,.28);
+  --f-disp:"Noto Serif SC",Georgia,"Songti SC",serif;
+  --f-body:"Noto Sans SC",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E141C; --surface:#161E2A; --surface2:#1E2836; --sunken:#121A24;
+    --ink:#DFE5EA; --ink2:#ABB6C2; --ink3:#7E8A98;
+    --rule:#2A3546; --rule2:#3B4859;
+    --c1:#9DBE77; --c1t:#AECB8C;
+    --c2:#6FAFD2; --c2t:#8CC3E0;
+    --c3:#DDBB5E; --c3t:#E7CB7E;
+    --c4:#4E9384; --c4t:#6FAE9F;
+    --c5:#9C92C6; --c5t:#B2A9D6;
+    --c6:#DD7A61; --c6t:#E89480;
+    --ok:#6FAE8A; --okbg:#1B3128;
+    --bad:#E08268; --badbg:#3A2119;
+    --idle:#66727F;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E141C; --surface:#161E2A; --surface2:#1E2836; --sunken:#121A24;
+  --ink:#DFE5EA; --ink2:#ABB6C2; --ink3:#7E8A98;
+  --rule:#2A3546; --rule2:#3B4859;
+  --c1:#9DBE77; --c1t:#AECB8C;
+  --c2:#6FAFD2; --c2t:#8CC3E0;
+  --c3:#DDBB5E; --c3t:#E7CB7E;
+  --c4:#4E9384; --c4t:#6FAE9F;
+  --c5:#9C92C6; --c5t:#B2A9D6;
+  --c6:#DD7A61; --c6t:#E89480;
+  --ok:#6FAE8A; --okbg:#1B3128;
+  --bad:#E08268; --badbg:#3A2119;
+  --idle:#66727F;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -16px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--f-body); font-size:16px; line-height:1.75;
+  padding-inline:max(20px,env(safe-area-inset-left)) max(20px,env(safe-area-inset-right));
+  padding-block:0 96px;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin-inline:auto}
+.col{max-width:68ch}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--c4);outline-offset:2px;border-radius:2px}
+
+/* ---- masthead ---- */
+.mast{padding-block:64px 40px;border-bottom:1px solid var(--rule)}
+.eyebrow{
+  font-family:var(--f-mono);font-size:11px;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink3);margin:0 0 20px;
+}
+h1{
+  font-family:var(--f-disp);font-weight:900;font-size:clamp(38px,7vw,72px);
+  line-height:1.02;letter-spacing:-.02em;margin:0 0 24px;text-wrap:balance;
+}
+.thesis{font-size:clamp(17px,2.1vw,20px);color:var(--ink2);max-width:60ch;line-height:1.7}
+.thesis b{color:var(--ink);font-weight:700}
+.mast-meta{
+  display:flex;flex-wrap:wrap;gap:0 28px;margin-top:36px;padding-top:22px;
+  border-top:1px solid var(--rule);font-family:var(--f-mono);font-size:12px;color:var(--ink3);
+}
+.mast-meta div{display:flex;gap:8px}
+.mast-meta b{color:var(--ink2);font-weight:600}
+
+/* ---- sections ---- */
+section{padding-block:56px 0}
+.shead{display:flex;align-items:baseline;gap:16px;margin-bottom:8px;flex-wrap:wrap}
+.shead h2{
+  font-family:var(--f-disp);font-weight:900;font-size:clamp(24px,3.4vw,34px);
+  line-height:1.2;margin:0;letter-spacing:-.01em;text-wrap:balance;
+}
+.shead .plate-no{
+  font-family:var(--f-mono);font-size:11px;font-weight:600;letter-spacing:.14em;
+  color:var(--ink3);text-transform:uppercase;white-space:nowrap;
+}
+.slede{color:var(--ink2);margin-top:14px;max-width:68ch}
+h3{
+  font-family:var(--f-body);font-weight:700;font-size:16px;margin:0 0 6px;
+  letter-spacing:.01em;text-wrap:balance;
+}
+.mt{margin-top:32px}
+
+/* ---- verdict ---- */
+.verdict{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:32px}
+@media(max-width:760px){.verdict{grid-template-columns:1fr}}
+.vbox{
+  background:var(--surface);border:1px solid var(--rule);border-radius:3px;
+  padding:24px 26px 26px;box-shadow:var(--shadow);
+}
+.vbox.holds{border-top:3px solid var(--ok)}
+.vbox.kills{border-top:3px solid var(--bad)}
+.vbox h3{margin-bottom:16px;font-size:15px}
+.vbox.holds h3{color:var(--ok)}
+.vbox.kills h3{color:var(--bad)}
+.vlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.vlist li{padding-left:20px;position:relative;font-size:14.5px;line-height:1.68;color:var(--ink2)}
+.vlist li::before{
+  content:"";position:absolute;left:0;top:9px;width:7px;height:7px;border-radius:50%;
+}
+.holds .vlist li::before{background:var(--ok)}
+.kills .vlist li::before{background:var(--bad)}
+.vlist b{color:var(--ink);font-weight:700}
+.tick{font-family:var(--f-mono);font-size:12px;color:var(--ink3);display:block;margin-top:3px}
+
+/* ---- plate (prototype) ---- */
+.plate{
+  margin-top:36px;border:1px solid var(--rule2);border-radius:3px;background:var(--surface);
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.plate-bar{
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:space-between;
+  padding:12px 18px;background:var(--sunken);border-bottom:1px solid var(--rule);
+}
+.crumbs{
+  font-family:var(--f-mono);font-size:12px;color:var(--ink2);display:flex;
+  align-items:center;gap:8px;flex-wrap:wrap;min-height:22px;
+}
+.crumbs .sep{color:var(--ink3)}
+.crumbs .here{color:var(--ink);font-weight:600}
+.btn{
+  font-family:var(--f-body);font-size:13px;font-weight:500;color:var(--ink2);
+  background:var(--surface);border:1px solid var(--rule2);border-radius:2px;
+  padding:6px 13px;cursor:pointer;transition:background .15s,border-color .15s,color .15s;
+}
+.btn:hover{background:var(--surface2);color:var(--ink);border-color:var(--ink3)}
+.btn.primary{background:var(--c4);border-color:var(--c4);color:#fff;font-weight:700}
+.btn.primary:hover{filter:brightness(1.12);color:#fff}
+.btn:disabled{opacity:.45;cursor:default;filter:none}
+.plate-body{display:grid;grid-template-columns:minmax(0,1fr) 336px;}
+@media(max-width:900px){.plate-body{grid-template-columns:1fr}}
+.stage{padding:16px;min-width:0;background:
+  radial-gradient(circle at 1px 1px, var(--rule) 1px, transparent 0) 0 0/22px 22px,
+  var(--surface);
+}
+.stage svg{display:block;width:100%;height:auto}
+.rail{
+  border-left:1px solid var(--rule);padding:20px;background:var(--sunken);
+  display:flex;flex-direction:column;gap:20px;min-width:0;
+}
+@media(max-width:900px){.rail{border-left:0;border-top:1px solid var(--rule)}}
+.rail-h{
+  font-family:var(--f-mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink3);margin:0 0 10px;
+}
+.rail-note{font-size:13px;line-height:1.65;color:var(--ink2)}
+.rail-note b{color:var(--ink)}
+
+/* legend */
+.legend{display:flex;flex-direction:column;gap:9px}
+.legend-row{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ink2)}
+.swatch{width:15px;height:15px;border-radius:50%;border:1.5px solid var(--ink);opacity:.5;flex:none}
+.swatch.full{opacity:1}
+.ramp{display:flex;align-items:center;gap:7px;margin-top:4px}
+.ramp-bar{display:flex;height:13px;border-radius:2px;overflow:hidden;border:1px solid var(--rule2);flex:1}
+.ramp-bar i{flex:1}
+.ramp-lbl{font-family:var(--f-mono);font-size:10.5px;color:var(--ink3);white-space:nowrap}
+
+/* map */
+.region{cursor:pointer}
+.region .body{transition:fill .18s}
+.region:hover .body,.region:focus-visible .body{fill:color-mix(in srgb, var(--ch) 62%, var(--paper))}
+.region:focus-visible{outline:none}
+.region:focus-visible .ring{stroke:var(--ink);stroke-width:2.5}
+.region .ring{fill:none;stroke:var(--ch);stroke-width:1.5;opacity:.55}
+.grat line{stroke:var(--rule);stroke-width:1;opacity:.55}
+.route{fill:none;stroke:var(--ink3);stroke-width:1.6;stroke-dasharray:2 7;stroke-linecap:round;opacity:.75}
+.gnum{font-family:var(--f-disp);font-weight:900;font-size:30px;fill:var(--cht)}
+.gname{font-family:var(--f-body);font-size:12px;font-weight:500;letter-spacing:.14em;fill:var(--cht);opacity:.85}
+.gpct{font-family:var(--f-mono);font-size:10.5px;font-weight:600;fill:var(--cht);opacity:.8}
+.gtrack{fill:var(--paper);opacity:.72}
+
+/* subject cards */
+.subjects{padding:8px 4px 4px}
+.subjects-title{font-family:var(--f-disp);font-weight:900;font-size:24px;margin:0 0 4px}
+.subjects-sub{font-size:13.5px;color:var(--ink2);margin:0 0 22px}
+.scards{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.scard{
+  text-align:left;background:var(--surface);border:1px solid var(--rule);border-radius:3px;
+  padding:16px 16px 15px;cursor:pointer;font-family:inherit;color:inherit;
+  display:flex;flex-direction:column;gap:9px;
+  transition:border-color .15s,box-shadow .15s,transform .15s;
+}
+.scard:hover{border-color:var(--ch);box-shadow:0 6px 18px -10px rgba(22,35,58,.4)}
+.scard:disabled{cursor:default;opacity:.5;background:var(--sunken)}
+.scard:disabled:hover{border-color:var(--rule);box-shadow:none}
+.scard .nm{font-weight:700;font-size:16px;display:flex;align-items:center;gap:8px}
+.scard .nm .dot{width:9px;height:9px;border-radius:50%;background:var(--ch);flex:none}
+.scard .cnt{font-family:var(--f-mono);font-size:11.5px;color:var(--ink3)}
+.scard .bar{height:5px;border-radius:3px;background:var(--surface2);overflow:hidden}
+.scard .bar i{display:block;height:100%;background:var(--ch);border-radius:3px}
+.scard .why{font-size:11.5px;color:var(--ink3);line-height:1.5}
+
+/* graph */
+.edge{stroke:var(--rule2);stroke-width:1.6}
+.edge.peer{stroke-dasharray:4 4;stroke:var(--ink3);opacity:.7}
+.edge.dim{opacity:.22}
+.gnode{cursor:pointer}
+.gnode circle.core{
+  stroke:var(--ink);stroke-opacity:.42;stroke-width:1.3;
+  transition:fill .3s;
+}
+.gnode.untested circle.core{stroke-dasharray:3 3;stroke-opacity:.6}
+.gnode text{font-family:var(--f-body);font-size:11px;fill:var(--ink2);text-anchor:middle;pointer-events:none}
+.gnode:hover text,.gnode.sel text{fill:var(--ink);font-weight:700}
+.gnode .halo{fill:none;stroke:var(--ink);stroke-width:2;opacity:0}
+.gnode.sel .halo{opacity:.9}
+.gnode:hover circle.core{stroke-opacity:1;stroke-width:2}
+.hull{fill:var(--ch);opacity:.055;stroke:var(--ch);stroke-width:1;stroke-dasharray:5 5}
+.hull-lbl{font-family:var(--f-mono);font-size:10px;font-weight:600;letter-spacing:.1em;fill:var(--cht);opacity:.9}
+.edge-lbl{font-family:var(--f-mono);font-size:9px;fill:var(--ink3)}
+
+/* question panel */
+.qhead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.qname{font-family:var(--f-disp);font-weight:900;font-size:19px;line-height:1.3;margin:0}
+.qmeta{display:flex;gap:14px;flex-wrap:wrap;font-family:var(--f-mono);font-size:11px;color:var(--ink3);margin-top:7px}
+.qmeta b{color:var(--ink2);font-weight:600}
+.chip{
+  display:inline-block;font-family:var(--f-mono);font-size:10.5px;font-weight:600;
+  letter-spacing:.08em;padding:2px 7px;border-radius:2px;background:var(--surface2);
+  color:var(--ink2);border:1px solid var(--rule2);white-space:nowrap;
+}
+.qcard{background:var(--surface);border:1px solid var(--rule);border-radius:3px;padding:16px}
+.qtype{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:11px}
+.qstem{font-size:14.5px;line-height:1.7;color:var(--ink);margin-bottom:14px}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{
+  display:flex;align-items:flex-start;gap:9px;font-size:14px;line-height:1.55;
+  padding:8px 10px;border:1px solid var(--rule);border-radius:2px;cursor:pointer;
+  background:var(--surface);transition:border-color .13s,background .13s;
+}
+.opt:hover{border-color:var(--ink3)}
+.opt input{margin:3px 0 0;accent-color:var(--c4);flex:none}
+.opt.picked{border-color:var(--c4);background:var(--sunken)}
+.opt.right{border-color:var(--ok);background:var(--okbg)}
+.opt.wrong{border-color:var(--bad);background:var(--badbg)}
+.opt input:disabled{cursor:default}
+.fillbox{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+input[type=text],textarea{
+  font-family:var(--f-body);font-size:14.5px;color:var(--ink);background:var(--surface);
+  border:1px solid var(--rule2);border-radius:2px;padding:8px 10px;width:100%;
+}
+textarea{min-height:92px;resize:vertical;line-height:1.65}
+input[type=text]:focus,textarea:focus{outline:2px solid var(--c4);outline-offset:1px;border-color:var(--c4)}
+.unit{font-size:14px;color:var(--ink2);white-space:nowrap}
+.qfoot{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+.vpanel{border-top:1px solid var(--rule);margin-top:14px;padding-top:14px;display:flex;flex-direction:column;gap:12px}
+.vtag{
+  display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;
+  font-family:var(--f-body);
+}
+.vtag.yes{color:var(--ok)}
+.vtag.no{color:var(--bad)}
+.vwhy{font-size:13.5px;line-height:1.7;color:var(--ink2)}
+.vwhy b{color:var(--ink)}
+.rubric{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.rubric li{
+  font-size:13px;line-height:1.6;color:var(--ink3);padding-left:20px;position:relative;
+}
+.rubric li::before{
+  content:"○";position:absolute;left:0;top:-1px;font-size:12px;color:var(--idle);
+}
+.rubric li.hit{color:var(--ink)}
+.rubric li.hit::before{content:"●";color:var(--ok)}
+.mstate{
+  display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center;
+  font-family:var(--f-mono);font-size:11.5px;color:var(--ink3);
+  border-top:1px dashed var(--rule2);padding-top:11px;
+}
+.mstate b{color:var(--ink);font-weight:600}
+.mstate .bar{grid-column:1/-1;height:6px;border-radius:3px;background:var(--surface2);overflow:hidden}
+.mstate .bar i{display:block;height:100%;background:var(--ch);border-radius:3px;transition:width .45s}
+.honest{
+  border:1px dashed var(--rule2);border-radius:3px;padding:13px 15px;
+  font-size:12.5px;line-height:1.68;color:var(--ink2);background:var(--surface);
+}
+.honest b{color:var(--ink)}
+.honest .hk{
+  font-family:var(--f-mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink3);display:block;margin-bottom:6px;
+}
+
+/* edges figure */
+.fig{border:1px solid var(--rule);background:var(--surface);border-radius:3px;padding:20px;margin-top:26px;overflow-x:auto}
+.fig svg{display:block;width:100%;max-width:640px;height:auto;margin-inline:auto}
+.figcap{font-size:12.5px;color:var(--ink3);margin-top:14px;line-height:1.65;max-width:66ch}
+.figcap b{color:var(--ink2);font-weight:600}
+.fsg circle{fill:var(--surface2);stroke:var(--ink3);stroke-width:1.2}
+.fsg text{font-family:var(--f-mono);font-size:10.5px;fill:var(--ink2);text-anchor:middle}
+.fsl{stroke:var(--ink3);stroke-width:1.6}
+.fsl.dash{stroke-dasharray:4 4}
+.fsl.warn{stroke:var(--c6)}
+
+/* prose blocks */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:26px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:3px;padding:22px 24px}
+.card h3{margin-bottom:10px}
+.card p{font-size:14.5px;color:var(--ink2);line-height:1.72}
+.card p+p{margin-top:11px}
+.card code{font-family:var(--f-mono);font-size:12.5px;background:var(--sunken);padding:1px 5px;border-radius:2px;color:var(--ink)}
+.keyline{
+  border-left:3px solid var(--c4);background:var(--sunken);padding:16px 20px;
+  border-radius:0 3px 3px 0;margin-top:26px;
+}
+.keyline p{font-size:15px;line-height:1.75;color:var(--ink2)}
+.keyline b{color:var(--ink)}
+
+/* steps */
+.steps{list-style:none;margin:30px 0 0;padding:0;display:flex;flex-direction:column;gap:0}
+.step{
+  display:grid;grid-template-columns:56px minmax(0,1fr);gap:20px;
+  padding:22px 0;border-top:1px solid var(--rule);
+}
+.step:last-child{border-bottom:1px solid var(--rule)}
+.step-no{
+  font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--ink3);
+  letter-spacing:.08em;padding-top:4px;
+}
+.step h3{margin-bottom:8px;font-size:16px}
+.step p{font-size:14.5px;color:var(--ink2);line-height:1.72}
+.step .tag{
+  font-family:var(--f-mono);font-size:10.5px;font-weight:600;letter-spacing:.08em;
+  color:var(--c4t);border:1px solid var(--rule2);border-radius:2px;padding:1px 6px;
+  margin-left:8px;white-space:nowrap;
+}
+@media(max-width:560px){.step{grid-template-columns:1fr;gap:8px}.step-no{padding-top:0}}
+
+/* table */
+.tblwrap{overflow-x:auto;margin-top:26px;border:1px solid var(--rule);border-radius:3px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:520px}
+th,td{text-align:left;padding:11px 16px;border-bottom:1px solid var(--rule);vertical-align:top;line-height:1.6}
+th{
+  font-family:var(--f-mono);font-size:10.5px;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink3);background:var(--sunken);white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:0}
+td code{font-family:var(--f-mono);font-size:12px;color:var(--c4t)}
+td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink2)}
+
+/* red lines */
+.reds{margin-top:26px;display:flex;flex-direction:column;gap:14px}
+.red{
+  display:grid;grid-template-columns:minmax(150px,190px) minmax(0,1fr);gap:20px;
+  background:var(--surface);border:1px solid var(--rule);border-left:3px solid var(--bad);
+  border-radius:0 3px 3px 0;padding:18px 22px;
+}
+.red .rt{font-weight:700;font-size:14.5px;color:var(--ink)}
+.red .rt span{display:block;font-family:var(--f-mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;color:var(--ink3);text-transform:uppercase;margin-top:5px}
+.red p{font-size:14px;color:var(--ink2);line-height:1.7}
+@media(max-width:640px){.red{grid-template-columns:1fr;gap:8px}}
+
+footer{
+  margin-top:80px;padding-top:26px;border-top:1px solid var(--rule);
+  font-family:var(--f-mono);font-size:11.5px;color:var(--ink3);
+  display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;
+}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+
+/* ---- 带教：考察面 / 阶梯 / 梯子 ---- */
+.faces{display:flex;flex-direction:column;gap:5px;margin-top:3px}
+.face{
+  display:flex;gap:8px;align-items:baseline;font-size:12.5px;line-height:1.55;
+  color:var(--ink3);padding:6px 9px;border:1px solid var(--rule);border-radius:2px;
+  background:var(--surface);transition:background .15s,border-color .15s;
+}
+.face::before{font-size:9px;flex:none;position:relative;top:-1px}
+.face.done::before{content:"●";color:var(--ok)}
+.face.now::before{content:"▸";color:var(--ink)}
+.face.todo::before{content:"○";color:var(--idle)}
+.face.done{color:var(--ink2)}
+.face.now{border-color:var(--ink3);background:var(--sunken);color:var(--ink);font-weight:600}
+.ftag{
+  font-family:var(--f-mono);font-size:9px;font-weight:600;letter-spacing:.06em;
+  padding:1px 5px;border-radius:2px;white-space:nowrap;flex:none;margin-left:auto;
+  border:1px solid currentColor;
+}
+.ftag.base{color:var(--bad)}
+.ftag.trap{color:var(--c3t)}
+.ftag.deep{color:var(--ok)}
+
+.steps{display:flex;gap:5px;flex-wrap:wrap;margin-top:11px}
+.step{
+  font-family:var(--f-mono);font-size:10px;letter-spacing:.04em;padding:3px 8px;
+  border:1px solid var(--rule2);border-radius:2px;color:var(--ink3);background:var(--surface);
+}
+.step.now{border-color:var(--ink);color:var(--ink);font-weight:700;background:var(--sunken)}
+.step.done{border-color:var(--ok);color:var(--ok)}
+
+.ladderbox{
+  border:1px solid var(--c3);border-radius:3px;padding:14px 15px;margin-top:14px;
+  background:color-mix(in srgb, var(--c3) 8%, var(--surface));
+}
+.ladder-h{
+  display:block;font-family:var(--f-mono);font-size:10px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--c3t);margin-bottom:9px;
+}
+.haltbox{border:1px solid var(--bad);border-radius:3px;padding:15px 17px;margin-top:14px;background:var(--badbg)}
+.haltbox .hh{font-weight:700;color:var(--bad);font-size:14px;margin-bottom:7px}
+.haltbox p{font-size:13px;line-height:1.68;color:var(--ink2);margin:0 0 11px}
+.praise{
+  font-size:13.5px;line-height:1.68;color:var(--ink);
+  border-left:3px solid var(--ok);padding-left:11px;
+}
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <p class="eyebrow">产品方案 · 2026-09-20</p>
+  <h1>六年知识地图</h1>
+  <p class="thesis">把小学六个年级的考点做成一张能点进去的大地图，点到最后是一道题——答完颜色会变。<b>方向是对的，但你现在这个设计里有三处会在做到一半时把它杀死。</b>下面这套方案先修那三处，再谈地图。</p>
+  <div class="mast-meta">
+    <div><span>覆盖</span><b>1–6 年级 · 5 学科</b></div>
+    <div><span>体量</span><b>约 3000 个知识点</b></div>
+    <div><span>原型</span><b>三年级数学（已可交互）</b></div>
+    <div><span>判分</span><b>确定性优先，LLM 兜底</b></div>
+  </div>
+</header>
+
+<section>
+  <div class="shead"><h2>这个想法站得住，也站不住</h2></div>
+  <p class="slede">先分开说。下面左边是这个想法里真的对的部分——不要动它；右边是四处如果不改设计就一定会失败的地方，它们不是"难度大"，是"按原设计做出来会是错的"。</p>
+
+  <div class="verdict col" style="max-width:none">
+    <div class="vbox holds">
+      <h3>站得住的三点</h3>
+      <ul class="vlist">
+        <li><b>掌握度可视化回灌到图谱</b>——这是整个想法里最有价值的一条。一眼看出哪里弱，比任何分数报表都直观。市面上做 K12 的很少把这件事做对。<span class="tick">Khan Academy 的 mastery、Anki 的复习热力图都证明了它有效</span></li>
+        <li><b>年级 → 学科 → 知识点 的三级下钻</b>——符合认知，也让"六年"这个吓人的体量变得可入口。第一级给了六个，而不是三千个。</li>
+        <li><b>先修关系本身就是孩子最容易断的地方</b>——三年级除法崩掉，根往往在二年级的乘法没过关。一张画着先修边的图能把这个显示出来，这是"分数"永远做不到的。</li>
+      </ul>
+    </div>
+    <div class="vbox kills">
+      <h3>会杀死它的四点</h3>
+      <ul class="vlist">
+        <li><b>"收集课本内容"这一句要删掉。</b>教材原文、例题、插图都在著作权保护里，人教/北师大/苏教各家还都不一样。能做的是<b>考纲与知识点体系</b>——那是公开的课标内容。<span class="tick">这不是法律顾问式的谨慎，是工作量差五倍的现实问题</span></li>
+        <li><b>"让 LLM 判分"在小学数学上会翻车。</b>模型算三位数乘法是真的会错，而且错得很自信。判断对错这件事根本不该交给一个概率模型——选择比对选项、填空规范化匹配、计算用符号求值，都能做到 100% 准确，还免费。<span class="tick">LLM 只该干一件事：把开放题的文本映射到"评分点命中"</span></li>
+        <li><b>"社区算法生成关联图谱"被当成了它做不到的东西。</b>Louvain / Leiden 是<b>聚类</b>——它按你喂的边分组，不发现教学规律。用它自动命名知识簇有用，指望它算出"该先学什么"不行。<span class="tick">边才是本体，聚类只是副产品</span></li>
+        <li><b>"答对 → 分数高 → 颜色深"是假的掌握感。</b>孩子把一科刷一遍，整张图全深了。一次答对说明不了任何事。<span class="tick">要改成间隔重复：答对只是把下次复测时间往后推</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="shead">
+    <span class="plate-no">图版 一</span>
+    <h2>原型：点一遍你就懂了</h2>
+  </div>
+  <p class="slede">这是真的能点的。六个区域 → 学科 → 知识图谱 → 点一个节点出题 → 作答 → 判分 → <b>看颜色和复测时间怎么变</b>。原型只做了三年级数学一条链路——这本身就是方案的建议（见下面的工序）。</p>
+
+  <div class="plate" id="plate">
+    <div class="plate-bar">
+      <nav class="crumbs" id="crumbs" aria-label="当前位置"></nav>
+      <button class="btn" id="btn-reset" type="button">回到大地图</button>
+    </div>
+    <div class="plate-body">
+      <div class="stage" id="stage"></div>
+      <aside class="rail" id="rail"></aside>
+    </div>
+  </div>
+</section>
+
+<section class="col">
+  <div class="shead"><h2>三处要改的设计，和改法</h2></div>
+
+  <div class="grid2" style="max-width:none">
+    <div class="card">
+      <h3>① 边从哪来 —— 这是图谱质量的唯一决定因素</h3>
+      <p>不要让 LLM"生成关联"。让它做一件窄得多的事：给两个已知知识点，判断它们是三种关系里的哪一种。三种关系都有客观依据，可校对：</p>
+      <p><b>先修</b>（学 B 之前必须先会 A）· <b>并列</b>（同级、互相印证）· <b>易混</b>（孩子会搞混的一对）。这三种边加起来就是教学论里"知识结构"的全部骨架。</p>
+      <p>边定好之后再跑聚类——这时候 Louvain 才真的有用：它会自动把"万以内加减、乘一位数、除数一位数"聚成一块，你只需要给它起个名字叫「整数运算」。<b>它是命名器，不是发现器。</b></p>
+    </div>
+    <div class="card">
+      <h3>② 判分分层 —— 能确定性判的，绝不问 LLM</h3>
+      <p><b>选择 / 判断</b>：比对，100% 准，零成本。</p>
+      <p><b>填空</b>：先规范化再匹配——全角转半角、去空格、统一标点，再用一张多答案表（<code>3/三/3个</code> 都算对）。覆盖绝大多数填空。</p>
+      <p><b>计算题</b>：不比对字符串，用符号求值验证表达式等价。<code>1/2</code> 和 <code>0.5</code> 和 <code>二分之一</code> 是同一个数。</p>
+      <p><b>只有文本题</b>（说理、作文、阅读理解）才调 LLM，而且它返回的<b>不是分数，是评分点命中情况</b>——"有没有指出单位不同"这种事它能可靠判断，"该给几分"它不能。</p>
+    </div>
+    <div class="card">
+      <h3>③ 掌握度 —— 把"答对次数"换成"记忆稳定性"</h3>
+      <p>用现成的间隔重复算法（FSRS 或 SM-2，都有开源实现）。规则简单：答对只是把<b>下次复测时间</b>往后推，答错就拉回到明天。</p>
+      <p>颜色深浅由稳定性算出来，<b>不由答对次数算</b>。区别是决定性的——刷一遍不会让图变深，只有隔了很久还记得才会。</p>
+      <p>顺带白拿一个功能：图上的颜色自动告诉你<b>今天该复习什么</b>。这比"错题本"有用得多。</p>
+    </div>
+    <div class="card">
+      <h3>④ 地图放最后做 —— 它是最不值钱的一环</h3>
+      <p>六个区域的草地、湖面、沙丘，用程序化生成（噪声 + 等高线）两天就能出，而且以后想换皮肤随时换。它是<b>包装</b>。</p>
+      <p>护城河在图谱质量和判分准确度上。建议 v1 不要地图，直接就是图谱；地图是 v2 套上去的一层。<b>反过来做的话，你会花一个月做出一个漂亮但不能用的东西。</b></p>
+      <p class="tick">这个原型为了让方案看得见，把地图做了——但那是我替你花的成本，不该是你先花的那笔。</p>
+    </div>
+  </div>
+
+  <div class="fig">
+    <svg viewBox="0 0 640 150" role="img" aria-label="三种边类型：先修、并列、易混">
+      <g class="fsg">
+        <circle cx="52" cy="42" r="17"/><text x="52" y="46">除法</text>
+        <circle cx="150" cy="42" r="17"/><text x="150" y="46">分数</text>
+        <line class="fsl" x1="70" y1="42" x2="132" y2="42"/>
+        <polygon points="132,42 124,38.5 124,45.5" fill="var(--ink3)"/>
+        <text x="101" y="86" style="font-size:11px">先修</text>
+        <text x="101" y="102" style="fill:var(--ink3);font-size:10px">学之前必须先会</text>
+      </g>
+      <g class="fsg">
+        <circle cx="272" cy="42" r="17"/><text x="272" y="46">千米</text>
+        <circle cx="370" cy="42" r="17"/><text x="370" y="46">吨</text>
+        <line class="fsl dash" x1="290" y1="42" x2="352" y2="42"/>
+        <text x="321" y="86" style="font-size:11px">并列</text>
+        <text x="321" y="102" style="fill:var(--ink3);font-size:10px">同级，互相印证</text>
+      </g>
+      <g class="fsg">
+        <circle cx="492" cy="42" r="17"/><text x="492" y="46">乘法</text>
+        <circle cx="590" cy="42" r="17"/><text x="590" y="46">除法</text>
+        <line class="fsl dash warn" x1="510" y1="42" x2="572" y2="42"/>
+        <text x="541" y="86" style="font-size:11px">易混</text>
+        <text x="541" y="102" style="fill:var(--ink3);font-size:10px">孩子会搞混的一对</text>
+      </g>
+    </svg>
+    <p class="figcap"><b>整张图只需要这三种边。</b>每一条都是可以拿去问老师"这对不对"的客观陈述——这就是为什么它可校对，而"让模型生成本体"不可校对。</p>
+  </div>
+</section>
+
+<section class="col">
+  <div class="shead"><h2>数据模型</h2></div>
+  <p class="slede">一张图 + 两张表。知识点是唯一的实体，掌握度是独立的一张表——因为它是<b>每个孩子各一份</b>的，而知识点是全站共享的。</p>
+
+  <div class="tblwrap">
+    <table>
+      <thead><tr><th>实体</th><th>字段</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td><code>knowledge_point</code></td><td>id · 年级 · 学科 · 名称 · 权重 · 掌握判据</td><td>全站共享。<b>掌握判据</b>是必须有的一个字段：能做出什么题算会了。没有它就无法测。</td></tr>
+        <tr><td><code>kp_edge</code></td><td>from · to · 类型（先修/并列/易混）</td><td>有向图。这张表的质量 = 产品的质量。</td></tr>
+        <tr><td><code>question</code></td><td>kp_id · 题型 · 题干 · 选项 · 答案 · 规范化规则 · 评分点</td><td>一道题属于一个知识点。<b>生成一次入库，不每次现生成</b>——省钱，而且同一个孩子两次看到同一题答案不会变。</td></tr>
+        <tr><td><code>mastery</code></td><td>用户 · kp_id · 稳定性 · 难度 · 到期日 · 最近一次结果</td><td>每个孩子一份。颜色、复习队列、薄弱清单全从这张表算。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="keyline">
+    <p><b>一个容易被忽略的字段：权重。</b>知识点不是同等重要的。"两位数乘两位数"在三年级下学期的分量远大于"吨的认识"。权重应该是<b>该知识点在真题里出现的频率</b>，而不是拍脑袋定的。它决定两件事：图上节点多大，以及薄弱时该先补哪个。</p>
+  </div>
+</section>
+
+<section class="col">
+  <div class="shead"><h2>工期与代价</h2></div>
+  <p class="slede">诚实的数字。真正贵的是校对，不是模型调用——模型那部分便宜到可以忽略。</p>
+
+  <div class="tblwrap">
+    <table>
+      <thead><tr><th>阶段</th><th>范围</th><th>工作量</th><th>产出</th></tr></thead>
+      <tbody>
+        <tr><td>0 · 打通</td><td>三年级 · 数学</td><td class="num">1–2 周</td><td>全链路可跑：16 个知识点、约 150 道题、判分、掌握度、图谱。就是这个原型的完成版</td></tr>
+        <tr><td>1 · 一个学科做全</td><td>1–6 年级 · 数学</td><td class="num">3–4 周</td><td>验证"跨年级的先修边"真的有用——这是整个产品最独特的价值，也最该早验证</td></tr>
+        <tr><td>2 · 铺开</td><td>6 年级 · 5 学科</td><td class="num">2–3 个月</td><td>约 24 个"学科×年级"单元，约 3000 知识点、3 万道题</td></tr>
+        <tr><td>3 · 包装</td><td>大地图 + 皮肤</td><td class="num">1–2 周</td><td>六个区域的游戏化外观</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="keyline">
+    <p><b>成本构成说清楚：</b>知识点体系是 <b>LLM 抽取 + 人工校对</b>，每个"学科×年级"单元约 1.5 人日——<b>贵的是那 1.5 人日</b>，不是模型。出题是 LLM 批量生成一次入库，3 万道题的总 token 成本按现在的便宜模型算<b>不到一百块</b>，再抽检 5%。所以这个项目的成本几乎全是<b>人时</b>，而人时集中在最前面的校对环节。</p>
+  </div>
+</section>
+
+<section class="col">
+  <div class="shead"><h2>红线：这三件事不确认清楚就不要写代码</h2></div>
+  <p class="slede">下面每一条都是"做到一半才发现"会让人想推倒重来的类型。我的建议顺序是：先把这些问清楚，再决定做给自己孩子用还是做成产品——这两个答案的工程取舍完全不同。</p>
+
+  <div class="reds" style="max-width:none">
+    <div class="red">
+      <div class="rt">教材版权<span>content</span></div>
+      <p>《义务教育课程标准（2022 年版）》是公开的，<b>课程内容与学段目标可以引用</b>；教材正文、例题、插图不能。人教版、北师大版、苏教版、外研版各成体系，各地考纲也不同。<b>第一版必须砍到只做一个版本</b>（建议人教版，覆盖面最大），否则工作量直接乘五。落库的应该是"知识点 + 先修关系"，不是课文。</p>
+    </div>
+    <div class="red">
+      <div class="rt">教育应用备案<span>compliance</span></div>
+      <p>面向中小学生的教育类 App 在国内有专门的备案要求（教育移动互联网应用程序备案）。<b>如果只给自己孩子用、跑在本地，这条不适用</b>；一旦上架或对外提供服务就适用。具体条款和执行口径请找懂行的人核实——我只负责提醒你现在就该问，而不是做完再问。</p>
+    </div>
+    <div class="red">
+      <div class="rt">未成年人信息<span>privacy</span></div>
+      <p>《未成年人网络保护条例》2024 年 1 月 1 日施行，处理不满十四周岁未成年人的个人信息需要监护人同意。<b>第一版最省事的规避方式是根本不做账号体系</b>——掌握度数据存在本机，不联网、不上传。这既绕开了合规，也让你自己孩子用起来更放心。等链路验证完再谈账号。</p>
+    </div>
+  </div>
+</section>
+
+<section class="col">
+  <div class="shead"><h2>工序</h2></div>
+  <p class="slede">顺序是有信息的，不要打乱。前四步做完之前不要开始第五步。</p>
+
+  <ol class="steps">
+    <li class="step">
+      <span class="step-no">STEP 1</span>
+      <div>
+        <h3>定口径<span class="tag">先做这个</span></h3>
+        <p>确定版本（人教版？）、确定"掌握判据"怎么写、确定权重从哪来（真题频率）。这一步产出的是纸面规则，不是代码。<b>跳过这一步会直接导致知识点表做两遍。</b></p>
+      </div>
+    </li>
+    <li class="step">
+      <span class="step-no">STEP 2</span>
+      <div>
+        <h3>建三年级的数学知识点表</h3>
+        <p>约 16–20 个知识点，每个带权重和掌握判据；再标三种边。<b>这张表手工过一遍</b>——它是整个产品的地基，也是唯一值得你亲自看一遍的东西。规模小到可以在一张纸上画完。</p>
+      </div>
+    </li>
+    <li class="step">
+      <span class="step-no">STEP 3</span>
+      <div>
+        <h3>判分引擎 + 掌握度引擎</h3>
+        <p>两个纯函数模块，不碰界面。确定性判分那套（规范化、多答案表、符号求值）和 FSRS。<b>这两块是整个系统里唯一需要写对的代码</b>，其余都是展示。</p>
+      </div>
+    </li>
+    <li class="step">
+      <span class="step-no">STEP 4</span>
+      <div>
+        <h3>出题并入库，把链路跑通</h3>
+        <p>给每个知识点生成 8–12 道题，覆盖四种题型，跑一遍完整流程：做题 → 判分 → 掌握度变化 → 复测队列。到这里<b>核心产品已经完成了</b>，剩下都是包装。</p>
+      </div>
+    </li>
+    <li class="step">
+      <span class="step-no">STEP 5</span>
+      <div>
+        <h3>跨年级验证</h3>
+        <p>把 1–6 年级数学都做出来，然后看一件事：<b>三年级的除法薄弱，图上能不能连回二年级的乘法。</b>能，这个产品就成立了；不能，说明边的质量还不够，回去修边。<span class="tag">最该早验的一步</span></p>
+      </div>
+    </li>
+    <li class="step">
+      <span class="step-no">STEP 6</span>
+      <div>
+        <h3>铺学科，最后套地图</h3>
+        <p>语文的开放题最难判分，英语和科学相对好做，建议顺序是<b>数学 → 英语 → 科学 → 语文</b>。六个区域的皮肤放在最后——它随时能加，而且加早了只会让人误以为产品已经做完了。</p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="col">
+  <div class="shead"><h2>需要你定的三件事</h2></div>
+  <p class="slede">这三个答案会改变方案，我不替你猜。</p>
+  <div class="grid2">
+    <div class="card">
+      <h3>给谁用</h3>
+      <p>只给自己孩子用 → 单机、无账号、无备案，<b>两三周就能用上</b>。</p>
+      <p>想做给别的孩子用 → 先解决备案和版权，工程取舍完全不同，周期是月不是周。</p>
+    </div>
+    <div class="card">
+      <h3>先做哪个学科</h3>
+      <p>我的建议是数学：答案客观、判分能做到 100% 准、先修关系最清晰，<b>是全链路最好的试验田</b>。</p>
+      <p>如果目标是"孩子明天就能用上"，那取决于他现在最弱的是哪科——这比技术判断更重要。</p>
+    </div>
+    <div class="card">
+      <h3>教材版本</h3>
+      <p>人教 / 北师大 / 苏教 / 外研……<b>只能选一个开始。</b></p>
+      <p>选错版本的代价不是返工，是知识点表对不上孩子课本，孩子第一眼就不认——那是最伤使用意愿的。</p>
+    </div>
+    <div class="card">
+      <h3>要不要我现在动手</h3>
+      <p>你说一声，我按工序从 STEP 2 开始：先把三年级数学那张知识点表列出来给你过目。<b>那张表不用写代码，是可以直接讨论的。</b></p>
+      <p>表定下来之后，判分和掌握度两个引擎我一个人就能写完。</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>六年知识地图 · 方案与原型 · 2026-09-20</span>
+  <span>原型数据：三年级数学 16 个知识点 · 8 道题 · 掌握度为示例值</span>
+</footer>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============ 数据 ============ */
+// 六个年级 = 六个区域。色相是地名，浓淡是掌握度。
+var GRADES = [
+  {n:1, cn:"一", name:"草地", hue:"--c1", huet:"--c1t"},
+  {n:2, cn:"二", name:"湖面", hue:"--c2", huet:"--c2t"},
+  {n:3, cn:"三", name:"沙丘", hue:"--c3", huet:"--c3t"},
+  {n:4, cn:"四", name:"林间", hue:"--c4", huet:"--c4t"},
+  {n:5, cn:"五", name:"山脊", hue:"--c5", huet:"--c5t"},
+  {n:6, cn:"六", name:"星野", hue:"--c6", huet:"--c6t"}
+];
+// 地图上的位置（手工摆成大地图的样子，不是网格）
+var MAP_POS = [
+  {x:172,y:150,r:92},{x:430,y:118,r:86},{x:686,y:168,r:86},
+  {x:740,y:358,r:78},{x:428,y:390,r:86},{x:158,y:370,r:78}
+];
+
+// 学科。built=true 表示原型里真做了。
+var SUBJECTS = {
+  3:[
+    {name:"数学", built:true, cnt:"16 个知识点", m:0.42, why:"原型已打通：出题、判分、掌握度、复测队列全在这条链路上"},
+    {name:"语文", built:false, cnt:"约 60 个知识点", why:"开放题最多，判分最难，建议放最后"},
+    {name:"英语", built:false, cnt:"约 45 个知识点", why:"词汇与句型可确定性判分，比语文好做"},
+    {name:"科学", built:false, cnt:"约 30 个知识点", why:"概念题为主，判分难度中等"},
+    {name:"道德与法治", built:false, cnt:"约 20 个知识点", why:"文本题为主，需要 LLM 评分点"}
+  ]
+};
+
+// 三年级数学：知识簇 + 知识点 + 三种边
+var GRAPH = {
+  clusters:[
+    {id:"A", name:"整数运算", hue:"--c3", huet:"--c3t"},
+    {id:"B", name:"量与计量", hue:"--c3", huet:"--c3t"},
+    {id:"C", name:"图形与几何", hue:"--c3", huet:"--c3t"},
+    {id:"D", name:"分数与小数", hue:"--c3", huet:"--c3t"},
+    {id:"E", name:"统计与可能性", hue:"--c3", huet:"--c3t"}
+  ],
+  nodes:[
+    // id, 全名, 图上短名, 簇, 权重(1-5), 掌握度(0-1), 复测间隔(天), 是否测过
+    {id:"a1", full:"万以内加减法",       s:"万以内加减", cl:"A", w:5, m:0.85, iv:21, seen:true},
+    {id:"a2", full:"多位数乘一位数",     s:"乘一位数",   cl:"A", w:5, m:0.62, iv:6,  seen:true},
+    {id:"a3", full:"除数是一位数的除法", s:"除数一位数", cl:"A", w:4, m:0.40, iv:3,  seen:true},
+    {id:"a4", full:"两位数乘两位数",     s:"两位数乘法", cl:"A", w:3, m:0.15, iv:2,  seen:true},
+    {id:"b1", full:"毫米、分米、千米的认识", s:"长度单位", cl:"B", w:3, m:0.70, iv:11, seen:true},
+    {id:"b2", full:"吨的认识",           s:"吨",         cl:"B", w:2, m:0.55, iv:5,  seen:true},
+    {id:"b3", full:"时分秒",             s:"时分秒",     cl:"B", w:3, m:0.78, iv:14, seen:true},
+    {id:"b4", full:"年月日",             s:"年月日",     cl:"B", w:3, m:0.33, iv:2,  seen:true},
+    {id:"c1", full:"四边形的认识",       s:"四边形",     cl:"C", w:3, m:0.66, iv:9,  seen:true},
+    {id:"c2", full:"周长的计算",         s:"周长",       cl:"C", w:5, m:0.44, iv:3,  seen:true},
+    {id:"c3", full:"面积与面积单位",     s:"面积单位",   cl:"C", w:4, m:0.10, iv:1,  seen:true},
+    {id:"c4", full:"位置与方向",         s:"位置方向",   cl:"C", w:2, m:0.50, iv:4,  seen:true},
+    {id:"d1", full:"分数的初步认识",     s:"分数初步",   cl:"D", w:4, m:0.28, iv:2,  seen:true},
+    {id:"d2", full:"小数的初步认识",     s:"小数初步",   cl:"D", w:3, m:0.05, iv:1,  seen:true},
+    {id:"e1", full:"可能性",             s:"可能性",     cl:"E", w:2, m:0.60, iv:7,  seen:true},
+    {id:"e2", full:"数据的整理与分析",   s:"数据整理",   cl:"E", w:2, m:0.00, iv:0,  seen:false}
+  ],
+  edges:[
+    {s:"a1",t:"a2",k:"pre"}, {s:"a2",t:"a4",k:"pre"}, {s:"a1",t:"a3",k:"pre"},
+    {s:"a3",t:"a4",k:"pre"}, {s:"a2",t:"a3",k:"peer"},
+    {s:"b1",t:"b2",k:"peer"}, {s:"b3",t:"b4",k:"pre"},
+    {s:"b1",t:"c2",k:"pre"}, {s:"b1",t:"c3",k:"pre"},
+    {s:"c1",t:"c2",k:"pre"}, {s:"c2",t:"c3",k:"pre"},
+    {s:"d1",t:"d2",k:"pre"}, {s:"a3",t:"d1",k:"pre"},
+    {s:"e1",t:"e2",k:"pre"}
+  ]
+};
+
+/* ============ 课：考察面 · 阶梯 · 梯子 ============ */
+// 一个知识点的「考察面」= 要真的会它，得会哪几件事。题必须把每一面都覆盖到。
+// 每道题都预先备好「梯子」（他错了，第一个问什么）。
+// 梯子也不行 → 停，指回先修节点。这是「老师」和「判分器」的分界线。
+var LESSON = {
+
+  a1:{
+    why:"万以内的加减法，难点不在算，在于进位和退位有没有漏掉。",
+    faces:[
+      {t:"会算万以内的加法，包括连续进位", tag:"地基", cls:"base"},
+      {t:"会算万以内的减法，包括连续退位"},
+      {t:"会用估算快速判断结果大概落在哪", tag:"真懂", cls:"deep"}
+    ],
+    steps:[
+      { tier:"地基题", face:0,
+        q:{ t:"填空", stem:"476 + 385 = ", unit:"。", accept:["861"],
+            first:"你知道要一位一位地加，这个顺序是对的。",
+            why:"476+385 = 861。个位 6+5=11，写 1 进 1；十位 7+8 再加进位的 1 得 16，写 6 进 1；百位 4+3 再加 1 得 8。连续进位一步都不能丢。" },
+        ladder:{ t:"填空", stem:"先只算个位：6 + 5 = ", unit:"，写 1 进 1。", accept:["11"],
+            why:"6+5 = 11，写 1 进 1。这个进上去的 1，下一步必须加到十位上——漏掉它就少了 10。" }
+      },
+      { tier:"主体题", face:1,
+        q:{ t:"填空", stem:"502 - 348 = ", unit:"。", accept:["154"],
+            first:"你知道要一位一位地减，方向是对的。",
+            why:"502-348 = 154。个位 2 减 8 不够，向十位借——可十位是 0，只好再向百位借。" },
+        ladder:{ t:"选择", stem:"个位 2 减 8 不够减，要向前一位借。可十位上是 0，借不到——那该怎么办？",
+            opts:["向百位借","没办法，这题算不出来"], ans:0,
+            why:"继续往前借：百位借 1 给十位，十位就有了 10，再借 1 给个位。这叫「隔位退位」，是减法里最容易漏的一步。" }
+      },
+      { tier:"检验题", face:2,
+        q:{ t:"选择", stem:"下面哪个算式的结果最接近 600？",
+            opts:["198 + 396","305 + 298","402 + 215","512 + 98"], ans:1,
+            praise:{0:"你会把两个数都往整百上凑，这个估算习惯很好——只是 198+396 实际是 594，差 6，比正确答案稍远。",
+                    2:"估算的方向对，只是 402+215 是 617，差了 17。",
+                    3:"用整百数来估是对的——512+98 = 610，差 10，还是比正确答案远一点。"},
+            why:"305+298 = 603，与 600 只差 3，是四个里最近的。估算的价值就是：不用精算，也知道结果大概落在哪。" },
+        ladder:{ t:"填空", stem:"305 接近 300，298 也接近 300。那 300 + 300 = ", unit:"。", accept:["600"],
+            why:"300+300 = 600。305 多了一点、298 少了一点，正好抵消，所以真正的结果非常接近 600。" }
+      }
+    ]
+  },
+
+  a2:{
+    why:"多位数乘一位数，就是把每一位分别乘，再把进位处理干净。",
+    prereq:{ id:"a1", why:"每一位乘完要相加、要处理进位——那一步靠的还是加法。" },
+    faces:[
+      {t:"会把每一位分别乘，处理好进位", tag:"地基", cls:"base"},
+      {t:"在应用题里认出该用乘法"},
+      {t:"算完会估算校对，知道结果大概多大", tag:"真懂", cls:"deep"}
+    ],
+    steps:[
+      { tier:"地基题", face:0,
+        q:{ t:"填空", stem:"一头牛重 485 千克，一头大象的体重是它的 8 倍。这头大象重 ", unit:"千克。",
+            accept:["3880","3,880","3880千克"],
+            first:"你认出「8 倍」要用乘法，这一步就对了。",
+            why:"485×8 = 3880。5×8=40 写 0 进 4；8×8=64 加进位 4 得 68，写 8 进 6；4×8=32 加 6 得 38。连续进位最容易漏。" },
+        ladder:{ t:"填空", stem:"先只乘个位：5 × 8 = ", unit:"。", accept:["40"],
+            why:"5×8 = 40，写 0 进 4。进位千万别丢，后面每一位都要加上它。" }
+      },
+      { tier:"易错题", face:2,
+        q:{ t:"选择", stem:"不算，估一下：485 × 8 大概是多少？",
+            opts:["大约 400","大约 4000","大约 40000","大约 5000"], ans:1,
+            praise:{0:"你知道要往整百上靠——但 485 当 500，500×8 是 4000，不是 400。",
+                    2:"往整百上靠的习惯是对的，只是多写了一个 0。",
+                    3:"500×8 = 4000，你估的方向对，稍微估高了一点。"},
+            why:"485 接近 500，500×8 = 4000。估算的价值在这里：真算完如果得 400 或者 40000，你当场就知道进位错了。" },
+        ladder:{ t:"填空", stem:"485 接近 500。500 × 8 = ", unit:"。", accept:["4000","4,000"],
+            why:"500×8 = 4000。485 比 500 小一点，所以真答案会略小于 4000——估算就是拿这个「大概」去校对精确计算。" }
+      },
+      { tier:"揉合题", face:1,
+        q:{ t:"选择", stem:"一支笔 12 元。买 7 支一共多少钱？这道题该用什么方法算？",
+            opts:["12 加 7","12 乘 7","12 除以 7"], ans:1,
+            praise:{0:"你知道要把 12 和 7 凑到一起——但 7 支是 7 份 12 元，一个一个加要加 7 次。",
+                    2:"除法用在「平均分」的场合。这里是 7 份一样多的钱，不是把一笔钱分掉。"},
+            why:"每支都是 12 元，7 支就是 7 个 12 元。几个相同的加数相加，就是乘法——认出这一点，比算得快更重要。" },
+        ladder:{ t:"填空", stem:"1 支 12 元。那 2 支多少元？", unit:"元。", accept:["24"],
+            why:"12+12 = 24。3 支再加一个 12……要加到第 7 支。同样的数加很多次，就该用乘法了。" }
+      }
+    ]
+  },
+
+  a3:{
+    why:"除数是一位数的除法，核心是「商写在哪一位上」。想当然的判断最容易被反例推翻。",
+    prereq:{ id:"a1", why:"除法的每一步都在做减法，退位不熟就一步都算不下去。" },
+    faces:[
+      {t:"会按位算除数是一位数的除法", tag:"地基", cls:"base"},
+      {t:"会用反例推翻「想当然」的结论", tag:"真懂", cls:"deep"}
+    ],
+    steps:[
+      { tier:"地基题", face:0,
+        q:{ t:"填空", stem:"96 ÷ 4 = ", unit:"。", accept:["24"],
+            first:"你知道要从高位开始分，方向对。",
+            why:"96÷4 = 24。9÷4 商 2 余 1，把 6 落下来凑成 16，16÷4 = 4——商写在十位和个位上。" },
+        ladder:{ t:"填空", stem:"先看十位：9 ÷ 4，商是 ", unit:"，余 1。", accept:["2"],
+            why:"商 2 余 1。余下的 1 和个位的 6 合成 16，再除以 4——除法就是这么一位一位往下走的。" }
+      },
+      { tier:"易错题", face:1,
+        q:{ t:"判断", stem:"被除数末尾有 0，商的末尾也一定有 0。",
+            opts:["对","错"], ans:1,
+            first:"你从「看起来像」推出了结论，这是人在没把握时会走的路——不丢人，但数学不吃这一套。",
+            why:"错。反例：240÷5 = 48。被除数末尾有 0，商的末尾没有。一句话推翻一个「规律」的办法，就是找一个反例。" },
+        ladder:{ t:"填空", stem:"自己造一个反例：240 ÷ 5 = ", unit:"。", accept:["48"],
+            why:"240÷5 = 48。你看，被除数末尾有 0，商的末尾没有 0——那句话就是错的。" }
+      }
+    ]
+  },
+
+  a4:{
+    why:"两位数乘两位数，是把不会的拆成两步已经会的：先乘个位，再乘十位，然后加起来。",
+    prereq:{ id:"a2", why:"这道题拆到底，每一步都是「多位数乘一位数」。" },
+    faces:[
+      {t:"会分两步乘，再把两个积加起来", tag:"地基", cls:"base"},
+      {t:"会拆数简算（25×36 看成 25×4×9）"},
+      {t:"在应用题里认出该用乘法"},
+      {t:"算完会估算校对，知道结果大概多大", tag:"真懂", cls:"deep"}
+    ],
+    steps:[
+      { tier:"地基题", face:0,
+        q:{ t:"填空", stem:"23 × 12 = ", unit:"。", accept:["276"],
+            first:"你愿意一位一位地乘，方向是对的。",
+            why:"23×12 = 23×10 + 23×2 = 230 + 46 = 276。分开两步乘、再相加——这就是两位数乘两位数的全部机关。" },
+        ladder:{ t:"填空", stem:"先只乘个位：23 × 2 = ", unit:"。", accept:["46"],
+            why:"23×2 = 46。第二道 23×10 = 230 是同一个道理，只是位置错开一位写。" }
+      },
+      { tier:"主体题", face:1,
+        q:{ t:"填空", stem:"25 × 36 = ", unit:"。", accept:["900"],
+            first:"你看出这两个数里有能凑整的东西，眼力不错。",
+            why:"25×36 = 25×4×9 = 100×9 = 900。把 36 拆成 4×9，25×4 先凑成 100——这不是投机，是这一课专门教的简算。" },
+        ladder:{ t:"填空", stem:"25 × 4 = ", unit:"。", accept:["100"],
+            why:"25×4 = 100。36 就是 4×9，所以 25×36 就是「100 再乘 9」。" }
+      },
+      { tier:"揉合题", face:2,
+        q:{ t:"选择", stem:"一箱牛奶 24 盒，学校买了 15 箱。一共多少盒？",
+            opts:["24 + 15 = 39 盒","24 × 15 = 360 盒","24 × 15 = 350 盒","15 × 15 = 225 盒"], ans:1,
+            praise:{0:"你会从题目里挑出两个数，这一步没错——但「一共」问的是 15 个 24，不是 24 加 15。",
+                    2:"式子列对了，24×15 就是这道题该用的，只差最后一步算错。",
+                    3:"你知道要用乘法，思路对——只是这两个数不该相乘。"},
+            why:"15 箱、每箱 24 盒，就是 15 个 24 相加。加法要写 15 行，乘法一行就够：24×15 = 360。" },
+        ladder:{ t:"选择", stem:"先不算。要算「15 箱一共多少盒」，是 24 加 15，还是 15 个 24 加起来？",
+            opts:["24 加 15","15 个 24 加起来"], ans:1,
+            why:"每箱都是 24 盒，15 箱就是 15 份 24——这是加法做不完的，所以用乘法。" }
+      },
+      { tier:"易错题", face:3,
+        q:{ t:"选择", stem:"不算，先估：24 × 15 大约是多少？",
+            opts:["大约 150","大约 375","大约 3750","大约 45"], ans:1,
+            praise:{0:"你会把数往整十上凑，习惯很好——但 24 当 25、15 还是 15，应该是 25×15。",
+                    2:"两个数都往整十上凑，思路对——只是位置错了，多写了一个 0。",
+                    3:"「大约」是要用乘法的——45 是加出来的。"},
+            why:"24 接近 25，25×15 = 375。估算的价值就在这里：真算完是 3750 或 150，你当场就知道错了。" },
+        ladder:{ t:"填空", stem:"24 接近 25。25 × 15 = ", unit:"。", accept:["375"],
+            why:"25×15：25×10=250，25×5=125，加起来 375。24 比 25 小一点，真答案会略小于 375——但绝不是 3750 那个量级。" }
+      }
+    ]
+  },
+
+  b1:{
+    why:"长度单位换算，就是「1 千米 = 1000 米」这一句话在不同方向上用。",
+    faces:[
+      {t:"知道 1 千米 = 1000 米，会换算", tag:"地基", cls:"base"},
+      {t:"知道什么时候该用哪个单位", tag:"真懂", cls:"deep"}
+    ],
+    steps:[
+      { tier:"地基题", face:0,
+        q:{ t:"填空", stem:"3 千米 = ", unit:"米。", accept:["3000","3,000"],
+            first:"你记得千米和米之间有进率，这一步对。",
+            why:"1 千米 = 1000 米，所以 3 千米 = 3 × 1000 = 3000 米。" },
+        ladder:{ t:"填空", stem:"1 千米 = ", unit:"米。", accept:["1000","1,000"],
+            why:"1 千米 = 1000 米。这是唯一的机关，剩下的都是乘或除。" }
+      },
+      { tier:"易错题", face:1,
+        q:{ t:"选择", stem:"从家到学校大约 2 千米。这句话里为什么用「千米」而不是「米」？",
+            opts:["因为 2 千米比 2 米长","因为这是「千米」更合适的场合——很长的距离用千米，桌子这种用米或厘米","随便用的，都行"], ans:1,
+            praise:{0:"你注意到了千米比米大，这个观察是对的——但真正的理由是「2 千米」比「2000 米」好读、好想象。",
+                    2:"你觉得单位是随便挑的——其实不是。挑单位是为了让数变得好读、好感受。"},
+            why:"单位不是随便挑的：一公里的路用「米」要写 2000 米，又长又不好感受。选对单位，是把数变得好读、好想象。" },
+        ladder:{ t:"选择", stem:"量课桌的高，用哪个单位更合适？",
+            opts:["厘米","千米"], ans:0,
+            why:"课桌高几十厘米，用厘米。很长的路才用千米——单位是挑出来的，不是随便写的。" }
+      }
+    ]
+  },
+
+  b3:{
+    why:"时分秒的进率是 60，不是 100——这是这一课所有错误的来源。",
+    faces:[
+      {t:"知道秒针走一圈是 60 秒，也就是 1 分钟", tag:"地基", cls:"base"},
+      {t:"不把 60 的进率当成 100", tag:"最常翻车", cls:"trap"}
+    ],
+    steps:[
+      { tier:"地基题", face:0,
+        q:{ t:"判断", stem:"钟面上秒针走一圈是 1 分钟。", opts:["对","错"], ans:0,
+            first:"你记得秒针和分钟有关系，方向对。",
+            why:"对。秒针走一圈是 60 秒，60 秒 = 1 分钟。分针走一圈才是 1 小时。" },
+        ladder:{ t:"填空", stem:"秒针走一圈是多少秒？", unit:"秒。", accept:["60"],
+            why:"60 秒。钟面上有 12 个大格、60 个小格，秒针每走一个小格是 1 秒，一圈正好 60 秒。" }
+      },
+      { tier:"易错题", face:1,
+        q:{ t:"填空", stem:"1 分 30 秒 = ", unit:"秒。", accept:["90"],
+            first:"你知道要把分换成秒再加起来，思路对。",
+            why:"1 分 = 60 秒，60 + 30 = 90 秒。这里最容易写成 130——因为脑子里把 60 当成 100 了。时分秒的进率是 60。" },
+        ladder:{ t:"填空", stem:"1 分 = ", unit:"秒，再补上 30 秒。", accept:["60"],
+            why:"1 分 = 60 秒，60 + 30 = 90。记住进率是 60，不是 100。" }
+      }
+    ]
+  },
+
+  b4:{
+    why:"年月日不是算术，是「记住哪些月多一天」+「闰年怎么判」。",
+    faces:[
+      {t:"记住大月小月各是哪些月", tag:"地基", cls:"base"},
+      {t:"知道闰年 2 月有 29 天", tag:"最常翻车", cls:"trap"},
+      {t:"会用「能被 4 整除」判断闰年", tag:"真懂", cls:"deep"}
+    ],
+    steps:[
+      { tier:"地基题", face:0,
+        q:{ t:"选择", stem:"下面哪一组全是「大月」（31 天）？",
+            opts:["1 月、3 月、5 月","4 月、6 月、9 月","2 月、4 月、11 月"], ans:0,
+            praise:{1:"这几个月的天数你记得挺准——只是它们都是 30 天的小月，不是 31 天的大月。",
+                    2:"你注意到 2 月很特殊，这个印象是对的——但 2 月既不是大月也不是小月，它单独算。"},
+            why:"1、3、5、7、8、10、12 月是 31 天。握拳数关节的土办法：凸起的是大月，凹下去的是小月，2 月单独记。" },
+        ladder:{ t:"填空", stem:"一年里 31 天的月份一共有 ", unit:"个。", accept:["7","七"],
+            why:"1、3、5、7、8、10、12——一共 7 个。握拳从食指关节数起：凸起的是大月。" }
+      },
+      { tier:"主体题", face:1,
+        q:{ t:"填空", stem:"2024 年 2 月有 ", unit:"天。", accept:["29"],
+            first:"你知道 2 月特殊，要单独想一下——这个意识是对的。",
+            why:"2024 能被 4 整除，且不是整百年，所以是闰年，2 月有 29 天。平年才是 28 天。" },
+        ladder:{ t:"选择", stem:"2024 能被 4 整除吗？",
+            opts:["能","不能"], ans:0,
+            why:"2024 ÷ 4 = 506，正好整除。能被 4 整除、又不是整百年 → 闰年 → 2 月 29 天。" }
+      },
+      { tier:"检验题", face:2,
+        q:{ t:"填空", stem:"下面哪一年是闰年？2010 年、2012 年、2014 年 —— ", unit:"年。", accept:["2012"],
+            first:"你知道要看年份本身，而不是去翻日历——这个方向就对了。",
+            why:"2012 ÷ 4 = 503，正好整除，所以是闰年。2010÷4 和 2014÷4 都余 2，都是平年。判闰年靠这一除，不靠背年份表。" },
+        ladder:{ t:"选择", stem:"2012 能被 4 整除吗？",
+            opts:["能","不能"], ans:0,
+            why:"2012 ÷ 4 = 503，正好整除。能被 4 整除（又不是整百年）就是闰年。" }
+      }
+    ]
+  },
+
+  c1:{
+    why:"四边形不是「四条边的图形」这么简单，关键在「四条直的边、四个角、围起来」。",
+    faces:[
+      {t:"知道四边形是四条边、四个角围成的图形", tag:"地基", cls:"base"},
+      {t:"知道长方形和正方形都是特殊的四边形", tag:"真懂", cls:"deep"}
+    ],
+    steps:[
+      { tier:"地基题", face:0,
+        q:{ t:"选择", stem:"下面哪个图形一定是四边形？",
+            opts:["有四条直的边、四个角，并且围起来的图形",
+                  "随便四条线连起来的图形",
+                  "有三条边、三个角的图形"], ans:0,
+            praise:{1:"你知道要数边，这个动作是对的——但「四条线」还不够，得是四条直的边、首尾接上围成一个圈。",
+                    2:"你会数边和角，这个习惯很好——三个角的是三角形，不是四边形。"},
+            why:"四边形 = 四条直的边 + 四个角 + 围起来。三个条件缺一个都不算：边可以是弯的、口可以是敞开的，那些都不是四边形。" },
+        ladder:{ t:"填空", stem:"一个图形有 4 条边、4 个角，它叫什么？", unit:"。", accept:["四边形"],
+            why:"4 条边、4 个角——「四边形」这个名字就是这么来的。" }
+      },
+      { tier:"检验题", face:1,
+        q:{ t:"判断", stem:"长方形和正方形都是四边形。", opts:["对","错"], ans:0,
+            first:"你记得长方形和正方形有共同点，这个方向是对的。",
+            why:"对。都有四条边、四个角，所以都属于四边形。正方形还很特殊——它是四条边都相等的长方形。" },
+        ladder:{ t:"填空", stem:"长方形有几条边？", unit:"条。", accept:["4","四"],
+            why:"4 条边、4 个角——四边形这个名字就是这么来的。既然它有，它当然属于四边形。" }
+      }
+    ]
+  },
+
+  c2:{
+    why:"周长是「围一圈的长度」。它不是背公式，是沿着边走一圈。",
+    prereq:{ id:"c1", why:"连四条边都认不全，就没法沿着边走一圈。" },
+    faces:[
+      {t:"知道周长是沿着边走一圈的长度", tag:"地基", cls:"base"},
+      {t:"会用 (长+宽)×2 算长方形周长"},
+      {t:"图形拼起来之后，周长会变", tag:"最常翻车", cls:"trap"},
+      {t:"分得清周长和面积", tag:"真懂", cls:"deep"}
+    ],
+    steps:[
+      { tier:"地基题", face:0,
+        q:{ t:"判断", stem:"长方形的周长，就是它四条边长度的和。", opts:["对","错"], ans:0,
+            first:"你记住了 (长+宽)×2 这个式子，公式是熟的——公式的来源就是「四条边加起来」，两边说的是同一件事。",
+            why:"对。周长就是沿着边绕一圈，把四段长度加起来。(长+宽)×2 只是算得快一点，来源还是这一句。" },
+        ladder:{ t:"选择", stem:"一只蚂蚁沿着长方形卡片的最外圈爬一圈，它爬的路程是这张卡片的——",
+            opts:["周长","面积"], ans:0,
+            why:"沿着边走一圈，走的就是周长。面积是卡片里面铺满多大，蚂蚁沿着边走是碰不到面积的。" }
+      },
+      { tier:"主体题", face:1,
+        q:{ t:"选择", stem:"一个长方形的长是 8 厘米，宽是 5 厘米，它的周长是多少？",
+            opts:["13 厘米","26 厘米","40 厘米","18 厘米"], ans:1,
+            praise:{0:"你把长和宽加起来，这一步对——但 8+5 只走了两条边，另外两条还没走。",
+                    2:"8×5 = 40 你算得没错，乘法也熟——但那算的是面积（里面铺满多少），题问的是周长（围一圈多长）。",
+                    3:"你会用 (长+宽)×2 这个式子，只差最后一次乘法。"},
+            why:"围一圈要走：8、5、8、5 四段，加起来 26 厘米。公式是 (8+5)×2 = 26。选 40 的是把周长和面积弄混了——这是三年级最经典的坑。" },
+        ladder:{ t:"填空", stem:"先别用公式。沿着走一圈：长 8、宽 5、再长 8、再宽 5。四段加起来是 ", unit:"厘米。", accept:["26"],
+            why:"8+5+8+5 = 26。公式 (8+5)×2 其实就是「先把一组长宽加起来，再乘 2」。" }
+      },
+      { tier:"易错题", face:2,
+        q:{ t:"填空", stem:"把两个边长 3 厘米的正方形拼成一个长方形，这个长方形的周长是 ", unit:"厘米。", accept:["18"],
+            first:"你知道要把两个图形合起来看，这个思路是对的。",
+            why:"拼成的是长 6、宽 3 的长方形，周长 (6+3)×2 = 18。写 24 的是把两个正方形的周长直接相加了——但贴在一起的那两条边缩到里面去了，不再是外轮廓。" },
+        ladder:{ t:"选择", stem:"两个正方形拼在一起时，中间贴着的那两条边，还算长方形的外轮廓吗？",
+            opts:["算","不算，它们被包在里面了"], ans:1,
+            why:"不算。周长只数最外面那一圈。中间贴住的两条边已经在里面了，一数就多算了 6 厘米。" }
+      },
+      { tier:"检验题", face:3,
+        q:{ t:"选择", stem:"下面哪句话是对的？",
+            opts:["周长是围一圈的长度，面积是铺满里面的大小","周长和面积是一回事，只是叫法不同","边长 4 厘米的正方形，周长和面积都是 16，所以它们相等"], ans:0,
+            praise:{1:"你记得这两个词都跟「大小」有关，方向没错——但它们量的是两件不同的事。",
+                    2:"你算得没错：周长 16 厘米、面积 16 平方厘米，数值确实一样——但正是这个巧合最能说明问题。"},
+            why:"数值凑巧都是 16，不代表相等：一个是 16 厘米（长度），一个是 16 平方厘米（面积），量的压根不是一类东西。" },
+        ladder:{ t:"选择", stem:"绕操场跑一圈，量的是操场的——",
+            opts:["周长","面积"], ans:0,
+            why:"跑一圈量的是周长。「围一圈」是周长，「铺满里面」是面积——这两句话分开记，就再也不会混。" }
+      }
+    ]
+  },
+
+  c3:{
+    why:"面积是「铺满表面要用多少」。它跟周长是两件事，单位也不是一类。",
+    prereq:{ id:"c2", why:"「围一圈」和「铺满」要分得清，得先有周长这个概念做对照。" },
+    faces:[
+      {t:"知道面积是「铺满表面的大小」，用平方单位量", tag:"地基", cls:"base"},
+      {t:"会算长方形、正方形的面积"},
+      {t:"分得清周长和面积，不混用", tag:"最常翻车", cls:"trap"},
+      {t:"知道长度单位和面积单位不能直接比", tag:"真懂", cls:"deep"}
+    ],
+    steps:[
+      { tier:"地基题", face:0,
+        q:{ t:"判断", stem:"课桌面的面积，指的是桌面的大小，用平方厘米、平方分米来量。", opts:["对","错"], ans:0,
+            first:"你知道面积和「桌面大小」有关系，方向是对的——「平方」这两个字就是面积的招牌。",
+            why:"对。面积量的是「表面铺满多大」，所以用平方单位。用厘米量出来的是长度，用平方厘米量的才是面积。" },
+        ladder:{ t:"选择", stem:"给桌面铺一层桌布，桌布的大小对应桌面的——",
+            opts:["周长","面积"], ans:1,
+            why:"铺满整个面，对应的是面积。如果是沿着桌子边贴一圈花边，那才是周长。" }
+      },
+      { tier:"主体题", face:1,
+        q:{ t:"填空", stem:"边长 4 厘米的正方形，面积是 ", unit:"平方厘米。", accept:["16"],
+            first:"你会用边长去乘，方向对。",
+            why:"4×4 = 16 平方厘米。「平方厘米」里的「平方」就是两个长度相乘的意思——所以面积单位上永远带一个「平方」。" },
+        ladder:{ t:"填空", stem:"在脑子里画一画：这个正方形里能摆下几个 1 厘米的小方格？横着 4 个、竖着 4 排，一共 ", unit:"个。", accept:["16"],
+            why:"横 4 竖 4，一共 16 个小方格，每个是 1 平方厘米，所以面积是 16 平方厘米。" }
+      },
+      { tier:"易错题", face:2,
+        q:{ t:"文本", stem:"边长 4 厘米的正方形，它的周长和面积相等吗？说说你的理由。",
+            rubric:[
+              {pt:"明确回答「不相等」", keys:["不相等","不同","不能比","不一样","不算相等"]},
+              {pt:"算出周长是 16 厘米", keys:["周长16","周长是16","16厘米","四条边"]},
+              {pt:"算出面积是 16 平方厘米", keys:["16平方厘米","平方厘米","面积16","面积是16"]},
+              {pt:"指出单位不同，不能直接比较", keys:["单位不同","单位不一样","长度单位","面积单位","不能比较","意义不同","不是一回事"]}
+            ],
+            min:3,
+            first:"你愿意把理由说完整——这一点就比只写一个答案强得多。",
+            why:"数值凑巧都是 16，但一个是 16 厘米（长度），一个是 16 平方厘米（面积）。单位不同，量的东西不是一类，不能比。" },
+        ladder:{ t:"选择", stem:"16 厘米 和 16 平方厘米，能直接说「一样大」吗？",
+            opts:["能，都是 16","不能，一个是长度、一个是面积"], ans:1,
+            why:"不能。「16 厘米」是围一圈多长，「16 平方厘米」是铺满多大。数字碰巧相同，量的东西不同。" }
+      },
+      { tier:"检验题", face:3,
+        q:{ t:"判断", stem:"一个长方形的周长是 24 厘米，面积是 24 平方厘米。两个数都是 24，所以它的周长和面积一样大。", opts:["对","错"], ans:1,
+            first:"你一眼就看出两个数相同，这个观察力是好的——",
+            why:"错。24 厘米量的是「围一圈多长」，24 平方厘米量的是「铺满多大」。单位不同，量的是两回事，数字碰巧相同也不能比。" },
+        ladder:{ t:"选择", stem:"「24 厘米」和「24 平方厘米」，能把它们直接比大小吗？",
+            opts:["能，都是 24","不能，一个是长度、一个是面积"], ans:1,
+            why:"不能。不同的单位量的不是一类东西——就像「3 岁的孩子」和「3 斤的西瓜」，数字一样，没法比。" }
+      }
+    ]
+  },
+
+  d1:{
+    why:"分数是从「平均分」来的。不平均，就没有分数。",
+    prereq:{ id:"a3", why:"「平均分成几份」本来就是除法——除法不熟，分数就只能靠背。" },
+    faces:[
+      {t:"知道「平均分」是分数的前提", tag:"地基", cls:"base"},
+      {t:"会把一个整体平均分后取几份，写成几分之几"},
+      {t:"分得清「分成几份」和「取几份」", tag:"最常翻车", cls:"trap"},
+      {t:"知道要同样大的整体才能比", tag:"真懂", cls:"deep"}
+    ],
+    steps:[
+      { tier:"地基题", face:0,
+        q:{ t:"判断", stem:"把一个圆分成 4 份，每份就是这个圆的 1/4。", opts:["对","错"], ans:1,
+            first:"你记住了「分成 4 份就是四分之一」这个印象，它是有的。",
+            why:"错。少了两个字——平均。随便切成 4 块，大小不一样，每块都不是 1/4。分数是从「平均分」来的，不平均就没有分数。" },
+        ladder:{ t:"选择", stem:"下面哪种分法，才能说每份是这个圆的 1/4？",
+            opts:["随便切成 4 块","每一块都一样大地切成 4 块"], ans:1,
+            why:"必须每块一样大，也就是「平均分」。这是分数的全部前提。" }
+      },
+      { tier:"主体题", face:1,
+        q:{ t:"填空", stem:"把一根绳子平均分成 8 段，每段是全长的 ", unit:"。（用分数表示）", accept:["1/8","八分之一","1／8"],
+            first:"你知道要用分数表示，方向对。",
+            why:"平均分成 8 份、取 1 份，就是 1/8。分母 8 是「分成几份」，分子 1 是「取了几份」。" },
+        ladder:{ t:"填空", stem:"「平均分成 8 段」——分母写几？（分母 = 分成的份数）", unit:"", accept:["8"],
+            why:"分母是 8。分成几份，分母就是几——分母写在下面，像托着分子的那个「分」。" }
+      },
+      { tier:"易错题", face:2,
+        q:{ t:"选择", stem:"一个蛋糕平均分成 8 份，吃掉了其中 3 份。吃掉了这个蛋糕的几分之几？",
+            opts:["3/8","8/3","1/8","3/3"], ans:0,
+            praise:{1:"你记住了分母是「分成几份」、分子是「取几份」，两个数都找对了——只是上下放反了。",
+                    2:"你注意到要写成分数，方向对——但吃掉的是 3 份，不是 1 份。",
+                    3:"你知道要拿两个数去做分数，只是这两个数选得不对。"},
+            why:"平均分成 8 份（分母 8），吃了 3 份（分子 3），所以是 3/8。分母在下面 = 一共分成几份，分子在上面 = 取了几份。" },
+        ladder:{ t:"选择", stem:"这个蛋糕一共被分成几份？吃掉其中几份？",
+            opts:["分成 3 份，吃了 8 份","分成 8 份，吃了 3 份"], ans:1,
+            why:"分成 8 份、吃掉 3 份。所以分母 8、分子 3，写作 3/8。" }
+      },
+      { tier:"检验题", face:3,
+        q:{ t:"判断", stem:"哥哥吃了一个大披萨的 1/2，弟弟吃了一个小披萨的 1/2。两个人吃的一样多。", opts:["对","错"], ans:1,
+            first:"你抓住了「都是 1/2」这个共同点，这一步是没错的——",
+            why:"错。两个披萨不一样大，1/2 也就不一样多。分数说的是「占整体的多少」，整体不同，同样的分数代表的数量就不同——这是真懂和背下来的分界线。" },
+        ladder:{ t:"选择", stem:"两个披萨不一样大。同样是 1/2，它们代表的大小一样吗？",
+            opts:["一样，都是 1/2","不一样，整体不同，1/2 也就不同"], ans:1,
+            why:"不一样。分数说的是「占整体的多少」——整体换了，同样的分数代表的数量就跟着换。" }
+      }
+    ]
+  },
+
+  e1:{
+    why:"可能性大小是「谁多谁大」，但「大」不等于「一定」。",
+    faces:[
+      {t:"知道数量多的，摸到的可能性大", tag:"地基", cls:"base"},
+      {t:"知道可能性大不等于一定会发生", tag:"真懂", cls:"deep"}
+    ],
+    steps:[
+      { tier:"地基题", face:0,
+        q:{ t:"判断", stem:"袋子里有 5 个红球和 1 个白球，任意摸一个，摸到红球的可能性大。", opts:["对","错"], ans:0,
+            first:"你注意到球不止一种颜色，这是判断可能性的第一步——",
+            why:"对。红球数量多，摸到红球的可能性就大。" },
+        ladder:{ t:"填空", stem:"袋子里红球 ", unit:"个，白球 1 个。哪个多？", accept:["5","五"],
+            why:"红球 5 个，比白球多，所以摸到红球的可能性更大。" }
+      },
+      { tier:"易错题", face:1,
+        q:{ t:"判断", stem:"还是这个袋子。摸 1 次，一定摸到红球。", opts:["对","错"], ans:1,
+            first:"你知道红球多，这个判断是有依据的——",
+            why:"错。「可能性大」和「一定」是两件事。白球虽然少，但确实存在，就有被摸到的可能。数量多只说明机会大，不说明包中。" },
+        ladder:{ t:"选择", stem:"袋子里到底有没有白球？",
+            opts:["有，1 个","没有"], ans:0,
+            why:"有 1 个白球。它确实躺在袋子里，就有被摸到的可能——所以「一定摸到红球」这句话不成立。" }
+      }
+    ]
+  },
+
+  e2:{
+    why:"统计表拿到手，第一件事是把各部分加起来，跟总数对一对。",
+    faces:[
+      {t:"会把各部分加起来，与总数核对", tag:"地基", cls:"base"},
+      {t:"发现对不上时，知道是「有遗漏」而不是「我算错了」", tag:"真懂", cls:"deep"}
+    ],
+    steps:[
+      { tier:"地基题", face:0,
+        q:{ t:"选择", stem:"三(1)班 30 人，每人只选一项最喜欢的运动。统计结果是：跳绳 12 人、踢球 8 人、游泳 6 人。这个统计有问题吗？",
+            opts:["没问题","有问题，还有 4 人没有被统计到","有问题，跳绳的人数不对","数据太少，看不出来"], ans:1,
+            praise:{0:"你会去看每一项的数，这一步对——但还没把它们加起来跟总数对一对。",
+                    2:"你注意到了跳绳这一项，思路是对的——但真正的问题不在某一项，在于加起来的总数。",
+                    3:"你感觉到不对劲，这个直觉很好——只是不是「数据太少」，而是数据对不上。"},
+            why:"12+8+6 = 26，比全班 30 人少 4 人。每人只选一项却对不上总数，说明有 4 个人没被统计进去。这个知识点之前从没测过——图上它是虚线圈。" },
+        ladder:{ t:"填空", stem:"先把三项加起来：12 + 8 + 6 = ", unit:"人。再跟全班 30 人比一比。", accept:["26"],
+            why:"12+8+6 = 26，可全班有 30 人，差了 4 个。统计表拿到手，先加总、再对总数——这一步能抓住大部分错误。" }
+      },
+      { tier:"检验题", face:1,
+        q:{ t:"判断", stem:"各部分加起来是 26 人，可全班有 30 人。这说明我加法算错了。", opts:["对","错"], ans:1,
+            first:"你会拿总数去核对，这个习惯非常对——",
+            why:"错。加错了只是其中一种可能，而且往往不是这种。更常见的是：有人根本没被统计进去（那天请假的、漏问的）。对不上时第一件事是回头查「谁没被统计到」，不是把加法重算十遍。" },
+        ladder:{ t:"选择", stem:"12+8+6 你重算三遍都是 26。那最可能出问题的地方是——",
+            opts:["我的加法","收集数据的时候漏掉了人"], ans:1,
+            why:"重复算过都一样，说明加法没问题。统计最容易出错的环节在「收集」，不在「计算」——先去找那 4 个没被问到的人。" }
+      }
+    ]
+  }
+};
+
+/* ============ 状态 ============ */
+// phase: ask 正常答题 → ladder 给了梯子 / teach 老师直讲 → halt 停下回去补先修
+var S = { grade:null, subject:null, node:null, step:0, phase:"ask",
+          res:{main:null, ladder:null}, hinted:false, helped:0 };
+// 运行时可变的知识点（掌握度会被答题改写）
+var NODES = GRAPH.nodes.map(function(n){ return Object.assign({}, n); });
+
+/* ============ 工具 ============ */
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function gradeOf(n){ for(var i=0;i<GRADES.length;i++) if(GRADES[i].n===n) return GRADES[i]; return null; }
+function nodeById(id){ for(var i=0;i<NODES.length;i++) if(NODES[i].id===id) return NODES[i]; return null; }
+function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
+// 掌握度 → 该色相填充百分比（14% 极淡 ~ 100% 满色）
+function mPct(m){ return (14 + clamp(m,0,1)*86).toFixed(0) + "%"; }
+
+// 规范化：全角→半角、去空格、统一标点。填空题判分的第一步。
+var PUNC = {"，":",","。":".","、":",","；":";","：":":","！":"!","？":"?","（":"(","）":")","／":"/","＋":"+","－":"-","×":"*","÷":"/"};
+function norm(s){
+  var t = String(s == null ? "" : s);
+  t = t.replace(/[！-～]/g, function(c){ return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); });
+  t = t.replace(/[　\s]/g, "");
+  t = t.replace(/[，。、；：！？（）／＋－×÷]/g, function(c){ return PUNC[c] || c; });
+  return t.toLowerCase();
+}
+
+/* ============ 布局：小规模力导向 + 簇重力 ============ */
+function layout(){
+  var W=760, H=520, cx=380, cy=248;
+  var nodes = NODES.map(function(n){ return Object.assign({}, n); });
+  var byId = {}; nodes.forEach(function(n){ byId[n.id]=n; });
+  var cls = GRAPH.clusters;
+  var R = 168;
+  cls.forEach(function(c,i){
+    var a = -Math.PI/2 + i/cls.length*Math.PI*2;
+    c.cx = cx + Math.cos(a)*R*1.18;
+    c.cy = cy + Math.sin(a)*R*0.80;
+  });
+  nodes.forEach(function(n){
+    var c = null; cls.forEach(function(x){ if(x.id===n.cl) c=x; });
+    n.cx = c.cx; n.cy = c.cy; n.r = 8 + n.w*2.1;
+  });
+  // 初值：绕簇心撒开
+  cls.forEach(function(c,i){
+    var mem = nodes.filter(function(n){ return n.cl===c.id; });
+    mem.forEach(function(n,j){
+      var a = -Math.PI/2 + j/mem.length*Math.PI*2 + i*0.9;
+      n.x = c.cx + Math.cos(a)*46;
+      n.y = c.cy + Math.sin(a)*46;
+    });
+  });
+  var ed = GRAPH.edges.map(function(e){ return {s:byId[e.s], t:byId[e.t], k:e.k}; });
+  for(var it=0; it<240; it++){
+    var k = 1 - it/240;
+    for(var i=0;i<nodes.length;i++){
+      for(var j=i+1;j<nodes.length;j++){
+        var a=nodes[i], b=nodes[j];
+        var dx=b.x-a.x, dy=b.y-a.y, d2=dx*dx+dy*dy;
+        if(d2 < 1){ dx = (i-j)*0.7+0.3; dy = (j-i)*0.5+0.3; d2 = 1; }
+        var d = Math.sqrt(d2);
+        var f = 5600/d2;
+        a.x -= dx/d*f*k; a.y -= dy/d*f*k;
+        b.x += dx/d*f*k; b.y += dy/d*f*k;
+      }
+    }
+    ed.forEach(function(e){
+      var dx=e.t.x-e.s.x, dy=e.t.y-e.s.y, d=Math.max(1,Math.hypot(dx,dy));
+      var f=(d-112)*0.05*k;
+      e.s.x += dx/d*f; e.s.y += dy/d*f;
+      e.t.x -= dx/d*f; e.t.y -= dy/d*f;
+    });
+    nodes.forEach(function(n){
+      n.x += (n.cx-n.x)*0.06*k;
+      n.y += (n.cy-n.y)*0.06*k;
+    });
+  }
+  // 夹进画布，给标签留边
+  nodes.forEach(function(n){
+    var pad = n.r + 36;
+    n.x = clamp(n.x, pad, W-pad);
+    n.y = clamp(n.y, 48+n.r, H-42-n.r);
+  });
+  return {nodes:nodes, edges:ed, W:W, H:H};
+}
+
+/* ============ SVG 小工具 ============ */
+function blobPts(cx, cy, r, seed, n){
+  n = n || 15;
+  var pts = [], s = seed;
+  function rnd(){ s = (s*1103515245 + 12345) & 0x7fffffff; return s/0x7fffffff; }
+  for(var i=0;i<n;i++){
+    var a = i/n*Math.PI*2;
+    var rr = r*(0.80 + rnd()*0.40);
+    pts.push([cx + Math.cos(a)*rr*1.16, cy + Math.sin(a)*rr*0.94]);
+  }
+  return pts;
+}
+function smoothClosed(p){
+  var d = "M" + p[0][0].toFixed(1) + "," + p[0][1].toFixed(1);
+  for(var i=0;i<p.length;i++){
+    var p0=p[(i-1+p.length)%p.length], p1=p[i], p2=p[(i+1)%p.length], p3=p[(i+2)%p.length];
+    var c1x=p1[0]+(p2[0]-p0[0])/6, c1y=p1[1]+(p2[1]-p0[1])/6;
+    var c2x=p2[0]-(p3[0]-p1[0])/6, c2y=p2[1]-(p3[1]-p1[1])/6;
+    d += "C"+c1x.toFixed(1)+","+c1y.toFixed(1)+" "+c2x.toFixed(1)+","+c2y.toFixed(1)+" "+p2[0].toFixed(1)+","+p2[1].toFixed(1);
+  }
+  return d + "Z";
+}
+function scalePts(p, cx, cy, f){
+  return p.map(function(q){ return [cx+(q[0]-cx)*f, cy+(q[1]-cy)*f]; });
+}
+function routePath(pts){
+  var d = "M"+pts[0][0].toFixed(1)+","+pts[0][1].toFixed(1);
+  for(var i=0;i<pts.length-1;i++){
+    var p0 = pts[i>0?i-1:0], p1 = pts[i], p2 = pts[i+1], p3 = pts[i+2<pts.length?i+2:pts.length-1];
+    var c1x=p1[0]+(p2[0]-p0[0])/6, c1y=p1[1]+(p2[1]-p0[1])/6;
+    var c2x=p2[0]-(p3[0]-p1[0])/6, c2y=p2[1]-(p3[1]-p1[1])/6;
+    d += "C"+c1x.toFixed(1)+","+c1y.toFixed(1)+" "+c2x.toFixed(1)+","+c2y.toFixed(1)+" "+p2[0].toFixed(1)+","+p2[1].toFixed(1);
+  }
+  return d;
+}
+// 某年级的掌握度概览（原型里只有三年级有真数据）
+function gradeMastery(gn){
+  if(gn !== 3) return null;
+  var tot=0, got=0, weak=0, done=0;
+  NODES.forEach(function(n){ tot += n.w; got += n.w*n.m; if(n.m<0.35) weak++; if(n.seen) done++; });
+  return {pct: got/tot, weak:weak, done:done, total:NODES.length};
+}
+// 全年级的假数据（其他年级没做，图上照样给个位置，但如实标注）
+var STUB_M = {1:0.71, 2:0.64, 4:0.38, 5:0.22, 6:0.09};
+
+/* ============ 渲染：大地图 ============ */
+function renderMap(){
+  var W=900, H=520;
+  var s = '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="六个年级区域地图">';
+  s += '<g class="grat">';
+  for(var x=0;x<=W;x+=45) s += '<line x1="'+x+'" y1="0" x2="'+x+'" y2="'+H+'"/>';
+  for(var y=0;y<=H;y+=45) s += '<line x1="0" y1="'+y+'" x2="'+W+'" y2="'+y+'"/>';
+  s += '</g>';
+  // 路线：把六个区域串成一条游戏路线
+  var pts = MAP_POS.map(function(p){ return [p.x, p.y]; });
+  s += '<path class="route" d="'+routePath(pts)+'"/>';
+
+  GRADES.forEach(function(g,i){
+    var p = MAP_POS[i];
+    var base = blobPts(p.x, p.y, p.r, 977 + i*333);
+    var gm = gradeMastery(g.n);
+    var pct = gm ? gm.pct : STUB_M[g.n];
+    s += '<g class="region" data-grade="'+g.n+'" tabindex="0" role="button" aria-label="'+g.cn+'年级 · '+g.name+'">';
+    s += '<title>'+g.cn+'年级 · '+g.name+'</title>';
+    s += '<path class="ring" d="'+smoothClosed(scalePts(base,p.x,p.y,1.20))+'"/>';
+    s += '<path class="ring" d="'+smoothClosed(scalePts(base,p.x,p.y,1.10))+'" opacity="0.4"/>';
+    s += '<path class="body" style="--ch:var('+g.hue+')" fill="color-mix(in srgb, var('+g.hue+') 30%, var(--paper))" d="'+smoothClosed(base)+'"/>';
+    s += '</g>';
+    // 标签（不放在可点组里，避免和命中区打架）
+    var lab = '';
+    lab += '<text class="gnum" x="'+p.x+'" y="'+(p.y-6)+'" text-anchor="middle" style="--cht:var('+g.huet+')">'+g.cn+'</text>';
+    lab += '<text class="gname" x="'+p.x+'" y="'+(p.y+16)+'" text-anchor="middle" style="--cht:var('+g.huet+')">'+g.name+'</text>';
+    var bw = 74, bx = p.x-bw/2, by = p.y+30;
+    lab += '<rect class="gtrack" x="'+bx+'" y="'+by+'" width="'+bw+'" height="6" rx="3"/>';
+    lab += '<rect x="'+bx+'" y="'+by+'" width="'+(bw*pct).toFixed(1)+'" height="6" rx="3" fill="var('+g.hue+')"/>';
+    lab += '<text class="gpct" x="'+p.x+'" y="'+(by+22)+'" text-anchor="middle" style="--cht:var('+g.huet+')">掌握 '+(pct*100).toFixed(0)+'%</text>';
+    s += '<g pointer-events="none">'+lab+'</g>';
+  });
+  s += '</svg>';
+  $("stage").innerHTML = s;
+
+  $("crumbs").innerHTML = '<span class="here">六个年级</span>';
+  $("btn-reset").disabled = true;
+
+  var rail = '';
+  rail += '<div><p class="rail-h">怎么读这张图</p><div class="legend">'
+    + '<div class="legend-row"><span class="swatch" style="background:var(--c3)"></span>区域的色相 = 地名，不是分数</div>'
+    + '<div class="legend-row" style="align-items:flex-start"><span class="swatch" style="background:var(--surface2);border-style:dashed"></span>每个区域下的横条 = 该年级的整体掌握度</div>'
+    + '</div></div>';
+  rail += '<div><p class="rail-h">一整张地图的顺序</p><p class="rail-note">虚线是路线，从一年级一路走到六年级。到图谱那一层，颜色才换成表示掌握度——<b>同一个产品里，颜色只表示一件事</b>：在地图上是"你在哪"，在图谱上是"你会多少"。</p></div>';
+  rail += '<div class="honest"><span class="hk">这个原型做到了哪</span>只有<b>三年级数学</b>是真的——16 个知识点、8 道题、判分和掌握度引擎都跑得通。其余年级的百分比是占位数字，不是数据。<br><br>这不是偷懒，这正好是方案的建议：<b>先把一条链路打通，再铺开。</b>铺开是复制工序，不是新问题。</div>';
+  $("rail").innerHTML = rail;
+}
+
+/* ============ 渲染：二级 = 学科 ============ */
+function renderSubjects(){
+  var g = gradeOf(S.grade);
+  var subs = SUBJECTS[S.grade] || [];
+
+  if(!subs.length){
+    // 其余五个年级没做。如实说，别给一个点了没反应的空页面。
+    $("stage").innerHTML = '<div class="subjects" style="--ch:var('+g.hue+')">'
+      + '<h3 class="subjects-title">'+g.cn+'年级 · '+g.name+'</h3>'
+      + '<p class="subjects-sub">这个年级还没有做。</p>'
+      + '<div class="honest" style="max-width:52ch"><span class="hk">为什么地图上有它</span>'
+      + '地图上六个区域都在，是因为"六个年级"是这个产品的入口结构，不是我随口画的。'
+      + '但真做了数据的只有<b>三年级数学</b>——其余五个年级的百分比是占位数字。'
+      + '<br><br>点回大地图，选<b>三年级</b>。</div>'
+      + '<div style="margin-top:18px"><button class="btn primary" id="btn-back" type="button">回到大地图</button></div>'
+      + '</div>';
+    $("crumbs").innerHTML = '<span class="here">'+g.cn+'年级</span>';
+    $("btn-reset").disabled = false;
+    $("rail").innerHTML = '<div><p class="rail-h">这一屏是故意留白的</p>'
+      + '<p class="rail-note">把没做的东西<b>明说没做</b>，比做一半假装做完了好。这也是为什么方案建议先打通一条链路——'
+      + '空着的五格会一直在那里提醒你还有多少没做。</p></div>';
+    var bb = $("btn-back");
+    if(bb) bb.addEventListener("click", backToMap);
+    return;
+  }
+
+  var s = '<div class="subjects" style="--ch:var('+g.hue+')">';
+  s += '<h3 class="subjects-title">'+g.cn+'年级 · '+g.name+'</h3>';
+  s += '<p class="subjects-sub">这个年级的几门课。点数学——那是原型真的做通的一门。</p>';
+  s += '<div class="scards">';
+  subs.forEach(function(sub,i){
+    var mid = 'sub-'+S.grade+'-'+i;
+    s += '<button class="scard" id="'+mid+'" style="--ch:var('+g.hue+')"'
+      + (sub.built ? ' data-subject="'+esc(sub.name)+'"' : ' disabled aria-disabled="true"')
+      + ' title="'+esc(sub.why)+'">';
+    s += '<span class="nm"><span class="dot"></span>'+esc(sub.name)+'</span>';
+    s += '<span class="cnt">'+esc(sub.cnt)+'</span>';
+    if(sub.built){
+      s += '<span class="bar"><i style="width:'+(sub.m*100).toFixed(0)+'%"></i></span>';
+      s += '<span class="why">已打通 · 整体掌握 '+(sub.m*100).toFixed(0)+'%</span>';
+    } else {
+      s += '<span class="why">未做 · '+esc(sub.why)+'</span>';
+    }
+    s += '</button>';
+  });
+  s += '</div></div>';
+  $("stage").innerHTML = s;
+
+  $("crumbs").innerHTML = '<span class="here">'+g.cn+'年级</span>';
+  $("btn-reset").disabled = false;
+
+  $("rail").innerHTML = '<div><p class="rail-h">这一层为什么这么设计</p><p class="rail-note">六个年级是入口，不是内容——第一屏给六个，孩子不会迷路；给三千个，没人知道从哪开始。</p></div>'
+    + '<div class="honest"><span class="hk">没做的那些卡片</span>没做的卡片是<b>禁用的</b>，不是点了没反应——点了没反应会让人以为坏了。把"还没做"如实显示出来，比假装做完了好。</div>';
+}
+
+/* ============ 渲染：三级 = 知识图谱 ============ */
+var LAID = null;
+function renderGraph(){
+  if(!LAID) LAID = layout();
+  var L = LAID, g = gradeOf(S.grade), ch = g.hue, cht = g.huet;
+  var s = '<svg viewBox="0 0 '+L.W+' '+L.H+'" role="img" aria-label="三年级数学知识点关联图谱">';
+  s += '<defs><marker id="arw" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto">'
+     + '<path d="M0,1 L7,4 L0,7 z" fill="var(--rule2)"/></marker></defs>';
+
+  // 簇的范围（位置分组，颜色不参与——颜色留给掌握度）
+  GRAPH.clusters.forEach(function(c){
+    var mem = L.nodes.filter(function(n){ return n.cl===c.id; });
+    if(!mem.length) return;
+    var x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    mem.forEach(function(n){
+      x0=Math.min(x0,n.x-n.r); y0=Math.min(y0,n.y-n.r);
+      x1=Math.max(x1,n.x+n.r); y1=Math.max(y1,n.y+n.r);
+    });
+    var pad=36, rx=(x1-x0)/2+pad, ry=(y1-y0)/2+pad;
+    var mx=(x0+x1)/2, my=(y0+y1)/2;
+    s += '<ellipse class="hull" style="--ch:var('+c.hue+')" cx="'+mx.toFixed(1)+'" cy="'+my.toFixed(1)+'" rx="'+rx.toFixed(1)+'" ry="'+ry.toFixed(1)+'"/>';
+    s += '<text class="hull-lbl" style="--cht:var('+c.huet+')" x="'+mx.toFixed(1)+'" y="'+(my-ry+15).toFixed(1)+'" text-anchor="middle">'+esc(c.name)+'</text>';
+  });
+
+  // 边
+  L.edges.forEach(function(e){
+    var dim = (S.node && S.node!==e.s.id && S.node!==e.t.id) ? ' dim' : '';
+    s += '<line class="edge '+e.k+dim+'" x1="'+e.s.x.toFixed(1)+'" y1="'+e.s.y.toFixed(1)+'" x2="'+e.t.x.toFixed(1)+'" y2="'+e.t.y.toFixed(1)+'"'
+      + (e.k==="pre" ? ' marker-end="url(#arw)"' : '') + '/>';
+  });
+
+  // 节点
+  L.nodes.forEach(function(n){
+    var sel = (S.node===n.id) ? ' sel' : '';
+    var un = n.seen ? '' : ' untested';
+    s += '<g class="gnode'+sel+un+'" data-node="'+n.id+'" tabindex="0" role="button" aria-label="'+esc(n.full)+'，掌握度 '+Math.round(n.m*100)+'%">';
+    s += '<title>'+esc(n.full)+'</title>';
+    s += '<circle class="halo" cx="'+n.x.toFixed(1)+'" cy="'+n.y.toFixed(1)+'" r="'+(n.r+6).toFixed(1)+'"/>';
+    s += '<circle class="core" style="--ch:var('+ch+')" cx="'+n.x.toFixed(1)+'" cy="'+n.y.toFixed(1)+'" r="'+n.r.toFixed(1)+'"'
+      + ' fill="color-mix(in srgb, var('+ch+') '+mPct(n.m)+', var(--surface))"/>';
+    s += '<text x="'+n.x.toFixed(1)+'" y="'+(n.y+n.r+14).toFixed(1)+'">'+esc(n.s)+'</text>';
+    s += '</g>';
+  });
+  s += '</svg>';
+  $("stage").innerHTML = s;
+
+  var g3 = gradeOf(S.grade);
+  $("crumbs").innerHTML = '<span>'+g3.cn+'年级</span><span class="sep">›</span><span>'+esc(S.subject)+'</span>'
+    + (S.node ? '<span class="sep">›</span><span class="here">'+esc(nodeById(S.node).full)+'</span>' : '');
+  $("btn-reset").disabled = false;
+
+  renderRail();
+}
+
+function renderRail(){
+  var g = gradeOf(S.grade), ch = g.hue, cht = g.huet;
+  var rail = '';
+  var sel = S.node ? nodeById(S.node) : null;
+
+  if(!sel){
+    var tot=0, got=0, weak=0, seen=0;
+    NODES.forEach(function(n){ tot+=n.w; got+=n.w*n.m; if(n.m<0.35) weak++; if(n.seen) seen++; });
+    rail += '<div><p class="rail-h">三年级数学 · 整体</p>'
+      + '<div class="legend">'
+      + '<div class="legend-row"><span class="swatch full" style="background:var(--'+ch.slice(2)+')"></span>整体掌握 '+((got/tot)*100).toFixed(0)+'%</div>'
+      + '<div class="legend-row"><span class="swatch" style="background:var(--surface2);border-style:dashed"></span>虚线圈 = 从没测过（'+ (NODES.length-seen) +' 个）</div>'
+      + '<div class="legend-row"><span class="swatch" style="background:var(--bad)"></span>薄弱，权重又高的有 '+NODES.filter(function(n){return n.m<0.35 && n.w>=4;}).length+' 个</div>'
+      + '</div></div>';
+    rail += '<div><p class="rail-h">颜色怎么读</p>'
+      + '<p class="rail-note">色相是年级（三年级 = 沙丘黄），<b>浓淡才是掌握度</b>。越浓 = 记得越牢。</p>'
+      + '<div class="ramp"><span class="ramp-lbl">生</span><span class="ramp-bar">';
+    for(var i=0;i<=8;i++){
+      var m = i/8;
+      rail += '<i style="background:color-mix(in srgb, var('+ch+') '+mPct(m)+', var(--surface))"></i>';
+    }
+    rail += '</span><span class="ramp-lbl">熟</span></div></div>';
+    rail += '<div class="honest"><span class="hk">边上那行小字</span>实线带箭头 = <b>先修</b>（要先会左边才会右边）；虚线 = <b>并列或易混</b>。<br><br>点任意一个圆，出一道理科题试试——答完看颜色和"下次复测"怎么变。</div>';
+  } else {
+    rail += '<div><p class="rail-h">选中的知识点</p>'
+      + '<div class="qhead"><h4 class="qname">'+esc(sel.full)+'</h4></div>'
+      + '<div class="qmeta"><span>权重 <b>'+sel.w+'/5</b></span><span>掌握 <b>'+Math.round(sel.m*100)+'%</b></span>'
+      + '<span>'+(sel.seen ? '复测 <b>'+sel.iv+' 天后</b>' : '<b>从没测过</b>')+'</span></div></div>';
+    rail += lessonBody(sel);
+  }
+  $("rail").innerHTML = rail;
+  bindRail(sel);
+}
+
+/* ---------- 带教：考察面 / 阶梯 / 梯子 ---------- */
+
+// 某一面考过了没有（走过的题里有哪道是打这一面的）
+function faceDone(L, fi){
+  for(var i=0;i<S.step && i<L.steps.length;i++) if(L.steps[i].face===fi) return true;
+  return false;
+}
+
+// 考察面：一张"这个知识点要会哪几件事"的单子。
+// 它的作用是让"题覆盖知识点"变成看得见的东西——每一面有没有被考到，一眼就有数。
+function facesPanel(L){
+  var h = '<div style="margin-top:16px"><p class="rail-h" style="margin-bottom:7px">这个知识点要会哪几件事</p><div class="faces">';
+  var nowFace = (S.step < L.steps.length) ? L.steps[S.step].face : -1;
+  L.faces.forEach(function(f,i){
+    var st = faceDone(L,i) ? "done" : (i===nowFace && S.phase!=="halt" ? "now" : "todo");
+    h += '<div class="face '+st+'"><span>'+esc(f.t)+'</span>'
+      + (f.tag ? '<span class="ftag '+(f.cls||"")+'">'+esc(f.tag)+'</span>' : '')
+      + '</div>';
+  });
+  h += '</div></div>';
+  return h;
+}
+
+function stepsStrip(L){
+  var h = '<div class="steps">';
+  L.steps.forEach(function(s,i){
+    h += '<span class="step '+(i<S.step?"done":(i===S.step?"now":""))+'">'+esc(s.tier)+'</span>';
+  });
+  h += '</div>';
+  return h;
+}
+
+function lessonBody(sel){
+  var L = LESSON[sel.id];
+  if(!L){
+    return '<div class="honest" style="margin-top:16px"><span class="hk">这个节点还没备课</span>'
+      + '原型只给一部分知识点写了完整的课（考察面 + 阶梯 + 梯子）。<b>真实产品里每个知识点都得有</b>——'
+      + '而且这一步正是模型干的活：把知识点、掌握判据、先修关系喂给它，让它自己拆考察面、自己排阶梯、'
+      + '<b>自己先把梯子想好</b>。</div>';
+  }
+  var h = facesPanel(L) + stepsStrip(L);
+
+  if(S.step >= L.steps.length) return h + doneBox(sel, L);
+
+  var step = L.steps[Math.min(S.step, L.steps.length-1)];
+  h += qCard(sel, step.q, step, "main");
+  if(S.phase === "ladder" && step.ladder) h += qCard(sel, step.ladder, step, "ladder");
+  else if(S.phase === "teach") h += teachBox();
+  else if(S.phase === "halt") h += haltBox(sel, L);
+  return h;
+}
+
+// 没有更小的梯子可给时，老师就直接讲一遍——但绝不代他做。
+// 「看完自己再走一遍」这一步不能省：自己走出来的才算数。
+function teachBox(){
+  return '<div class="ladderbox">'
+    + '<span class="ladder-h">这一步没有更小的梯子了 · 我直接讲一遍</span>'
+    + '<p class="vwhy" style="margin:0 0 12px">上面那条「卡在哪」就是这道题的全部机关。'
+    + '看完先别急着往下——<b>合上它，自己再走一遍</b>。这一遍是你自己走出来的，才算数。</p>'
+    + '<div class="qfoot" style="margin-top:0">'
+    + '<button class="btn primary" id="btn-retry" type="button">我再试一次</button>'
+    + '<span class="rail-note" style="font-size:12px">这次还过不去，我们就回去补地基</span></div>'
+    + '</div>';
+}
+
+// 一张答题卡。mode="main" 是正题，"ladder" 是老师给的梯子。
+function qCard(n, q, step, mode){
+  if(!q) return '';
+  var isL = (mode === "ladder");
+  var h = '<div class="'+(isL?"ladderbox":"qcard")+'"'+(isL?'':' style="margin-top:12px"')+'>';
+  if(isL) h += '<span class="ladder-h">先别急 · 把步子拆小一点</span>';
+  h += '<div class="qtype"><span class="chip">'+esc(q.t)+'</span>'
+    + '<span class="chip">'+esc(step.tier)+' · 考察第 '+(step.face+1)+' 件事</span></div>';
+  h += '<p class="qstem">'+esc(q.stem)+'</p>';
+
+  var r = (S.res[mode] && S.res[mode].nid===n.id) ? S.res[mode] : null;
+
+  if(q.t==="选择" || q.t==="判断"){
+    h += '<div class="opts" id="opts">';
+    q.opts.forEach(function(o,i){
+      var cls = "opt";
+      var checked = (r && r.pick===i) ? " checked" : "";
+      if(r){
+        if(i===q.ans) cls += " right";
+        else if(r.pick===i) cls += " wrong";
+      }
+      h += '<label class="'+cls+'" for="opt-'+mode+'-'+i+'">'
+        + '<input type="radio" id="opt-'+mode+'-'+i+'" name="opt-'+mode+'" value="'+i+'"'+(r?' disabled':'')+checked+'>'
+        + '<span>'+esc(o)+'</span></label>';
+    });
+    h += '</div>';
+  } else if(q.t==="填空"){
+    h += '<div class="fillbox">'
+      + '<input type="text" id="ans-'+mode+'" autocomplete="off" placeholder="填答案"'
+      + (r ? ' value="'+esc(r.raw||"")+'" disabled' : '')+'>'
+      + '<span class="unit">'+esc(q.unit||"")+'</span></div>';
+  } else {
+    h += '<textarea id="ans-'+mode+'" placeholder="用自己的话说，写清楚理由"'+(r?' disabled':'')+'>'+ (r ? esc(r.raw||"") : '') +'</textarea>';
+  }
+
+  if(!r){
+    h += '<div class="qfoot"><button class="btn primary" id="btn-submit" type="button">'
+      + (isL ? '试试这一问' : '提交')+'</button>'
+      + '<span class="rail-note" id="hint-'+mode+'" style="font-size:12px">'
+      + (q.t==="文本" ? '这一题会走 LLM——但看它返回什么' : '这一题不用 LLM，本地判') + '</span></div>';
+  } else {
+    h += r.html;
+    if(!isL && r.ok){
+      var last = (S.step >= LESSON[n.id].steps.length - 1);
+      h += '<div class="qfoot"><button class="btn'+(last?' primary':'')+'" id="btn-next" type="button">'
+        + (last ? '走完这个知识点' : '下一题')+'</button>'
+        + '<span class="rail-note" style="font-size:12px">'
+        + (last ? '还有别的考察面没走到的话，阶梯会继续' : '阶梯往下一级走')
+        + '</span></div>';
+    }
+  }
+  h += '</div>';
+  return h;
+}
+
+// 停下：两次都没过去。不是终点，是路标——顺着图上的箭头指回先修节点。
+function haltBox(sel, L){
+  var p = L.prereq;
+  var h = '<div class="haltbox">'
+    + '<div class="hh">先停一下——这个点今天不怪你</div>';
+  if(p){
+    var pn = nodeById(p.id);
+    var nm = pn ? pn.full : p.id;
+    h += '<p>你已经试了两回，都没过去。再问下去只会越问越烦。'
+      + '真正卡住的地方，多半不在「'+esc(sel.full)+'」，而在它下面那块地基：<b>'+esc(nm)+'</b>。</p>'
+      + '<p style="color:var(--ink3)">'+esc(p.why)+'</p>'
+      + '<div class="qfoot" style="margin-top:0">'
+      + '<button class="btn primary" id="btn-prereq" type="button">回去补「'+esc(nm)+'」</button>'
+      + '<span class="rail-note" style="font-size:12px">顺着图上那条箭头往回走</span></div>';
+  } else {
+    h += '<p>你已经试了两回，都没过去。这个点先放一放，明天再来——今天只要记住<b>卡在哪一步</b>就够了。</p>';
+  }
+  h += '<p style="margin:11px 0 0;font-size:12.5px;color:var(--ink3)">'
+    + '这一步是整套东西最值钱的地方：<b>卡住不是终点，是路标</b>——它告诉你该往地图的哪儿走。</p>'
+    + '</div>';
+  return h;
+}
+
+function doneBox(sel, L){
+  var weak = L.faces.filter(function(f,i){ return !faceDone(L,i); });
+  var h = '<div class="qcard" style="margin-top:12px">'
+    + '<div class="qtype"><span class="chip">走完了</span><span class="chip">'+L.steps.length+' 级阶梯</span></div>'
+    + '<p class="qstem">「'+esc(sel.full)+'」今天这一轮走完了。</p>'
+    + '<p class="vwhy">收尾三句话——今天会了什么、哪个点还悬着、明天先做哪一道。'
+    + '这里也是最该由模型来写的地方：它看过你每一道题的答法，知道你是<b>真会</b>还是<b>蒙对</b>。</p>';
+  if(weak.length){
+    h += '<p class="vwhy" style="color:var(--ink3)">还有 '+weak.length+' 个考察面这轮没走到，下次补上。</p>';
+  }
+  h += '<div class="mstate"><span>掌握度</span><span><b>'+Math.round(sel.m*100)+'%</b></span>'
+    + '<span>下次复测</span><span><b>'+(sel.iv===1?'明天':sel.iv+' 天后再测')+'</b></span>'
+    + '<span class="bar"><i style="width:'+(sel.m*100).toFixed(0)+'%"></i></span></div>'
+    + '<div class="qfoot"><button class="btn" id="btn-reopen" type="button">再走一遍</button></div>'
+    + '</div>';
+  return h;
+}
+
+/* ============ 判分 ============ */
+// 判分只回答"这一题过没过"，不回答"这个孩子行不行"。
+// 三档：ok 独立做对 / hint 在提示下做对 / fail 两次都没过去。
+function judge(n, q, mode){
+  var res = {nid:n.id, mode:mode, t:q.t, ok:false, head:'', raw:'', pick:-1};
+  var praise = '';
+
+  if(q.t==="选择" || q.t==="判断"){
+    var picked = document.querySelector('input[name="opt-'+mode+'"]:checked');
+    if(!picked) return null;
+    res.pick = parseInt(picked.value, 10);
+    res.ok = (res.pick === q.ans);
+    if(!res.ok){
+      if(q.praise && q.praise[res.pick] != null) praise = q.praise[res.pick];
+      else praise = q.first || '';
+    }
+    var h = '<div class="vpanel">';
+    h += '<div class="vtag '+(res.ok?'yes':'no')+'">'+(res.ok?'答对了':'这一题没过')+'</div>';
+    if(praise) h += '<p class="praise"><b>先说对的：</b>'+esc(praise)+'</p>';
+    h += '<p class="vwhy"><b>'+(res.ok?'巩固一下：':'卡在哪：')+'</b>'+esc(q.why)+'</p>';
+    h += '<div class="mstate"><span>判分方式</span><span><b>本地比对</b> · 0 次模型调用</span></div>';
+    h += '</div>';
+    res.head = h;
+    return res;
+  }
+
+  if(q.t==="填空"){
+    var box = $("ans-"+mode);
+    var raw = box ? box.value : "";
+    res.raw = raw;
+    var v = norm(raw);
+    var acc = (q.accept||[]).map(norm);
+    res.ok = acc.indexOf(v) >= 0;
+    var h2 = '<div class="vpanel">';
+    h2 += '<div class="vtag '+(res.ok?'yes':'no')+'">'+(res.ok?'答对了':'这一题没过')+'</div>';
+    if(!res.ok && q.first) h2 += '<p class="praise"><b>先说对的：</b>'+esc(q.first)+'</p>';
+    h2 += '<p class="vwhy"><b>正确答案：</b>'+esc(q.accept[0])+'<br>'+esc(q.why)+'</p>';
+    if(!res.ok && raw){
+      h2 += '<p class="vwhy" style="font-family:var(--f-mono);font-size:12px;color:var(--ink3)">'
+        + '规范化之后你的答案是「'+esc(v)+'」。全角半角、空格、逗号在这一步都被抹掉——'
+        + '所以 "3 8 8 0" 和 "3880" 是同一个答案。'
+        + '这一步不需要模型，一个函数就够。</p>';
+    }
+    h2 += '<div class="mstate"><span>判分方式</span><span><b>规范化 + 多答案表</b> · 0 次模型调用</span></div>';
+    h2 += '</div>';
+    res.head = h2;
+    return res;
+  }
+
+  // 文本题：这才是 LLM 该干的活——返回评分点命中，不给分
+  var area = $("ans-"+mode);
+  var txt = area ? area.value : "";
+  res.raw = txt;
+  var v2 = norm(txt);
+  var hits = (q.rubric||[]).map(function(rp){
+    var hit = rp.keys.some(function(k){ return v2.indexOf(norm(k)) >= 0; });
+    return {pt:rp.pt, hit:hit};
+  });
+  var nh = hits.filter(function(x){ return x.hit; }).length;
+  var need = q.min || Math.ceil(hits.length*0.75);
+  res.ok = (v2.length > 0) && (nh >= need);
+
+  var h3 = '<div class="vpanel">';
+  h3 += '<div class="vtag '+(res.ok?'yes':'no')+'">'+(res.ok?'这一题过了':'还差一点')+'</div>';
+  if(!res.ok && q.first) h3 += '<p class="praise"><b>先说对的：</b>'+esc(q.first)+'</p>';
+  h3 += '<p class="vwhy" style="font-size:12.5px;color:var(--ink3)">下面是模型返回的<b>评分点命中</b>——不是它给的分数。分数是本地按命中数算的，规则你说了算。</p>';
+  h3 += '<ul class="rubric">';
+  hits.forEach(function(x){
+    h3 += '<li class="'+(x.hit?'hit':'')+'">'+esc(x.pt)+'</li>';
+  });
+  h3 += '</ul>';
+  h3 += '<p class="vwhy"><b>命题人说明：</b>'+esc(q.why)+'</p>';
+  h3 += '<div class="mstate"><span>判分方式</span><span><b>1 次模型调用</b> · 命中 '+nh+'/'+hits.length+'（需 '+need+'）</span></div>';
+  h3 += '</div>';
+  res.head = h3;
+  return res;
+}
+
+// 掌握度：颜色由这个函数算出来，不由"答对次数"算出来。
+// ★ 关键的一条：在提示下做对，和独立做对，是两件事——涨幅不一样。
+// 这是 FSRS 里 hard / good 的区别，也是"老师"和"判分器"的区别。
+function nextState(n, grade){
+  if(grade === "none") return {m: n.m, iv: n.iv, why:"先不记分——把它弄会再说"};
+  if(grade === "hint") return {m: n.m + (1-n.m)*0.15, iv: 2, why:"在提示下做对，明天再独立确认一次"};
+  if(grade === "ok"){
+    if(!n.seen) return {m: n.m + (1-n.m)*0.45, iv: 2, why:"独立做对"};
+    return {m: n.m + (1-n.m)*0.45, iv: Math.max(2, Math.round((n.iv||1)*2.2)), why:"独立做对，复测推远"};
+  }
+  return {m: n.m*0.6, iv: 1, why:"两次都没过去，明天再来"};
+}
+
+function meter(n, grade){
+  var nx = nextState(n, grade);
+  if(grade === "none"){
+    return '<div class="mstate">'
+      + '<span>掌握度</span><span><b>'+Math.round(n.m*100)+'% —— 先不动</b></span>'
+      + '<span class="bar"><i style="width:'+(n.m*100).toFixed(0)+'%"></i></span>'
+      + '<span>这一答算</span><span><b>'+esc(nx.why)+'</b></span>'
+      + '<span>图上颜色</span><span>暂时不变</span>'
+      + '</div>';
+  }
+  var up = nx.m >= n.m;
+  return '<div class="mstate">'
+    + '<span>掌握度</span><span><b>'+Math.round(n.m*100)+'% '+(up?'↑':'↓')+' '+Math.round(nx.m*100)+'%</b></span>'
+    + '<span class="bar"><i style="width:'+(nx.m*100).toFixed(0)+'%"></i></span>'
+    + '<span>下次复测</span><span><b>'+(nx.iv===1?'明天':nx.iv+' 天后再测')+'</b></span>'
+    + '<span>这一答算</span><span><b>'+esc(nx.why)+'</b></span>'
+    + '<span>图上颜色</span><span>跟着变'+(up?'浓':'淡')+'</span>'
+    + '</div>';
+}
+
+// 一次作答走完的流程。它是一段教学，不是一次判分：
+//   正题过 → 阶梯下一级
+//   正题没过 → 给梯子（这时先不动掌握度——课还没上完，扣分是拿尺子打人）
+//   梯子过了 → 原题重答一遍，掌握度只记一小笔
+//   梯子也没过 → 停，顺着 prereq 箭头指回地基层
+function applyResult(){
+  var n = nodeById(S.node);
+  var L = LESSON[n.id];
+  if(!L || S.phase === "halt" || S.step >= L.steps.length) return;
+
+  var step = L.steps[S.step];
+  var mode = (S.phase === "ladder") ? "ladder" : "main";
+  var q = (mode === "ladder") ? step.ladder : step.q;
+  if(!q) return;
+
+  if(q.t==="选择" || q.t==="判断"){
+    if(!document.querySelector('input[name="opt-'+mode+'"]:checked')){
+      var hint = $("hint-"+mode);
+      if(hint){ hint.textContent = "先选一个答案再提交。"; hint.style.color = "var(--bad)"; }
+      return;
+    }
+  }
+
+  S.res[mode] = null;
+  var res = judge(n, q, mode);
+  if(!res) return;
+
+  var grade;
+  if(res.ok && mode === "ladder"){
+    grade = "hint";        // 扶着做对了
+    S.phase = "ask";
+    S.hinted = true;
+    S.res.main = null;     // 原题清空，让他自己再走一遍
+  } else if(res.ok){
+    grade = S.hinted ? "none" : "ok";   // 刚被扶过的那道，不重复记分
+    S.hinted = false;
+    S.helped = 0;
+    S.step = Math.min(S.step + 1, L.steps.length);
+    S.phase = "ask";
+  } else if(mode === "ladder"){
+    grade = "fail";
+    S.phase = "halt";
+  } else if(S.helped >= 1){
+    // 已经扶过一次（梯子或讲解），还是没过——这时候再问下去就是折磨了
+    grade = "fail";
+    S.phase = "halt";
+  } else {
+    // 正题第一次错：先不动掌握度，给帮助。
+    // 有梯子就给梯子，没有梯子老师就直讲一遍——但都得让他自己再走一次。
+    grade = "none";
+    S.helped = 1;
+    S.phase = step.ladder ? "ladder" : "teach";
+  }
+
+  if(grade !== "none"){
+    var nx = nextState(n, grade);
+    n.m = nx.m; n.iv = nx.iv; n.seen = true;
+  }
+  res.html = res.head + meter(n, grade);
+  S.res[mode] = res;
+  renderGraph();
+}
+
+function resetLesson(){
+  S.node = null; clearStep();
+}
+// 只重置"这一道题"的状态，不动当前是哪个节点
+function clearStep(){
+  S.step = 0; S.phase = "ask";
+  S.res = {main:null, ladder:null}; S.hinted = false; S.helped = 0;
+}
+function backToMap(){
+  S.grade = null; S.subject = null;
+  resetLesson();
+  renderMap();
+}
+
+/* ============ 事件 ============ */
+function bindRail(sel){
+  var b = $("btn-submit");
+  if(b) b.addEventListener("click", applyResult);
+
+  // 走完一轮，从头再来
+  var ro = $("btn-reopen");
+  if(ro) ro.addEventListener("click", function(){ clearStep(); renderGraph(); });
+
+  // 老师讲完了，让他自己再走一遍（helped 保持 1：这一遍再错就停）
+  var rt = $("btn-retry");
+  if(rt) rt.addEventListener("click", function(){
+    S.res.main = null; S.phase = "ask"; renderGraph();
+  });
+
+  // ★ 停下之后顺着先修箭头往回走——这个按钮是整套东西的枢纽：
+  //   出题卡住 → 顺着 prereq 边找 → 找到真正没掌握的那个 → 去补它 → 回来再试
+  var bp = $("btn-prereq");
+  if(bp) bp.addEventListener("click", function(){
+    var p = LESSON[S.node] && LESSON[S.node].prereq;
+    if(!p) return;
+    S.node = p.id; clearStep(); renderGraph();
+  });
+
+  // 正题和梯子可能同时在场（正题已答、梯子待答），各自的控件各自绑
+  ["main","ladder"].forEach(function(mode){
+    var box = $("ans-"+mode);
+    if(box){
+      box.addEventListener("keydown", function(e){
+        if(e.key === "Enter" && box.tagName === "INPUT"){ e.preventDefault(); applyResult(); }
+      });
+      if(!box.disabled) box.focus();
+    }
+    var opts = document.querySelectorAll('input[name="opt-'+mode+'"]');
+    for(var i=0;i<opts.length;i++){
+      opts[i].addEventListener("change", function(){
+        var card = this.closest(".qcard") || this.closest(".ladderbox");
+        if(!card) return;
+        var labs = card.querySelectorAll(".opt");
+        for(var j=0;j<labs.length;j++) labs[j].classList.remove("picked");
+        this.closest(".opt").classList.add("picked");
+      });
+    }
+  });
+}
+
+$("stage").addEventListener("click", function(e){
+  var reg = e.target.closest ? e.target.closest(".region") : null;
+  if(reg){
+    S.grade = parseInt(reg.getAttribute("data-grade"), 10);
+    S.subject = null; resetLesson();
+    renderSubjects(); return;
+  }
+  var sc = e.target.closest ? e.target.closest(".scard[data-subject]") : null;
+  if(sc){
+    S.subject = sc.getAttribute("data-subject");
+    resetLesson();
+    LAID = null;
+    renderGraph(); return;
+  }
+  var nd = e.target.closest ? e.target.closest(".gnode") : null;
+  if(nd){
+    S.node = nd.getAttribute("data-node");
+    clearStep();
+    renderGraph(); return;
+  }
+});
+$("stage").addEventListener("keydown", function(e){
+  if(e.key !== "Enter" && e.key !== " ") return;
+  var t = e.target;
+  if(t.classList && (t.classList.contains("region") || t.classList.contains("gnode"))){
+    e.preventDefault(); t.click();
+  }
+});
+$("btn-reset").addEventListener("click", backToMap);
+
+renderMap();
+})();
+</script>
